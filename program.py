@@ -10,7 +10,7 @@ class Program():
     def __init__(self, *args):
 
         self.file = open('program.txt', 'r')
-        # self.slices = args[0]
+        self.slices = args[0]
         self.res_batch = []
 
     def __iter__(self):
@@ -29,7 +29,10 @@ class Program():
         instr, args = self.res_batch.pop(0)
         match instr:
             case 'spm_allocate':
-                pass
+                slice_idx, id, rows, cols, dtype = args
+                print(f'Program: SPM {slice_idx} allocate {
+                      id} with shape {rows}x{cols} of type {dtype}')
+                self.slices[slice_idx].spm_allocate(id, rows, cols, dtype)
 
     def read_file(self, size):
         lines = []
@@ -46,5 +49,6 @@ class Program():
 
 
 if __name__ == '__main__':
-    program = Program()
+    slices = [Slice(None) for _ in range(16)]
+    program = Program(slices)
     next(program)

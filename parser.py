@@ -89,20 +89,20 @@ def p_assignment(p):
 
 def p_slice_predicate_slice_number(p):
     'slice_predicate : SLICE DOT NUMBER DOT'
-    print('Slicing number with value: %s' % p[3])
-    p[0] = p[3]
+    print('Parser: Slicing number with value: %s' % p[3])
+    p[0] = [p[3]]
 
 
 def p_instruction_slice_claim_bar(p):
     'instruction : slice_predicate CLAIM_BAR LPAREN assignment RPAREN'
-    print('Claiming barrier with assignment: %s' % p[4])
+    print('Parser: Claiming barrier with assignment: %s' % p[4])
     p[0] = ('claim_barrier', p[4])
 
 
 def p_instruction_slice_spm_alocate(p):
     'instruction : slice_predicate SPM_ALOCATE LPAREN assignment RPAREN'
-    print('Alocating SPM with assignment: %s' % p[4])
-    p[0] = ('spm_allocate', p[4])
+    print('Parser: Alocating SPM with assignment: %s' % p[4])
+    p[0] = ('spm_allocate', p[1] + p[4])
 
 
 def p_tma_predicate(p):
@@ -111,22 +111,22 @@ def p_tma_predicate(p):
 
 def p_instruction_tma_load_slice(p):
     'instruction : tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN assignment RPAREN'
-    print('Loading TMA with assignment: %s' % p[8])
+    print('Parser: Loading TMA with assignment: %s' % p[8])
 
 
 def p_instruction_tma_load_multicast(p):
     'instruction : tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN'
-    print('Loading TMA multicast with assignment: %s' % p[6])
+    print('Parser: Loading TMA multicast with assignment: %s' % p[6])
 
 
 def p_instruction_tma_store_slice(p):
     'instruction : tma_predicate STORE DOT SLICE DOT NUMBER LPAREN assignment RPAREN'
-    print('Storing TMA with assignment: %s' % p[8])
+    print('Parser: Storing TMA with assignment: %s' % p[8])
 
 
 def p_instruction_tma_store_multicast(p):
     'instruction : tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN'
-    print('Storing TMA multicast with assignment: %s' % p[6])
+    print('Parser: Storing TMA multicast with assignment: %s' % p[6])
 
 
 parser = yacc.yacc()
