@@ -1,0 +1,809 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> statement
+Rule 1     statement -> statement statement
+Rule 2     statement -> instruction
+Rule 3     expression -> term
+Rule 4     expression -> expression PLUS term
+Rule 5     expression -> expression MINUS term
+Rule 6     term -> factor
+Rule 7     term -> term TIMES factor
+Rule 8     term -> term DIVIDE factor
+Rule 9     factor -> NUMBER
+Rule 10    factor -> LPAREN expression RPAREN
+Rule 11    empty -> <empty>
+Rule 12    assignment -> assignment COMMA assignment
+Rule 13    assignment -> empty
+Rule 14    assignment -> NUMBER
+Rule 15    assignment -> IDENTIFIER
+Rule 16    assignment -> IDENTIFIER ASSIGN expression
+Rule 17    slice_predicate -> SLICE DOT NUMBER DOT
+Rule 18    instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN
+Rule 19    instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN
+Rule 20    tma_predicate -> TMA DOT
+Rule 21    instruction -> tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+Rule 22    instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN
+Rule 23    instruction -> tma_predicate STORE DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+Rule 24    instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN
+
+Terminals, with rules where they appear
+
+ASSIGN               : 16
+CLAIM_BAR            : 18
+COMMA                : 12
+DIVIDE               : 8
+DOT                  : 17 17 20 21 21 22 23 23 24
+IDENTIFIER           : 15 16
+LOAD                 : 21 22
+LPAREN               : 10 18 19 21 22 23 24
+MINUS                : 5
+MULTICAST            : 22 24
+NUMBER               : 9 14 17 21 23
+PLUS                 : 4
+RPAREN               : 10 18 19 21 22 23 24
+SLICE                : 17 21 23
+SPM_ALOCATE          : 19
+STORE                : 23 24
+TIMES                : 7
+TMA                  : 20
+error                : 
+
+Nonterminals, with rules where they appear
+
+assignment           : 12 12 18 19 21 22 23 24
+empty                : 13
+expression           : 4 5 10 16
+factor               : 6 7 8
+instruction          : 2
+slice_predicate      : 18 19
+statement            : 1 1 0
+term                 : 3 4 5 7 8
+tma_predicate        : 21 22 23 24
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . statement
+    (1) statement -> . statement statement
+    (2) statement -> . instruction
+    (18) instruction -> . slice_predicate CLAIM_BAR LPAREN assignment RPAREN
+    (19) instruction -> . slice_predicate SPM_ALOCATE LPAREN assignment RPAREN
+    (21) instruction -> . tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+    (22) instruction -> . tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN
+    (23) instruction -> . tma_predicate STORE DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+    (24) instruction -> . tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN
+    (17) slice_predicate -> . SLICE DOT NUMBER DOT
+    (20) tma_predicate -> . TMA DOT
+
+    SLICE           shift and go to state 5
+    TMA             shift and go to state 6
+
+    statement                      shift and go to state 1
+    instruction                    shift and go to state 2
+    slice_predicate                shift and go to state 3
+    tma_predicate                  shift and go to state 4
+
+state 1
+
+    (0) S' -> statement .
+    (1) statement -> statement . statement
+    (1) statement -> . statement statement
+    (2) statement -> . instruction
+    (18) instruction -> . slice_predicate CLAIM_BAR LPAREN assignment RPAREN
+    (19) instruction -> . slice_predicate SPM_ALOCATE LPAREN assignment RPAREN
+    (21) instruction -> . tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+    (22) instruction -> . tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN
+    (23) instruction -> . tma_predicate STORE DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+    (24) instruction -> . tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN
+    (17) slice_predicate -> . SLICE DOT NUMBER DOT
+    (20) tma_predicate -> . TMA DOT
+
+    SLICE           shift and go to state 5
+    TMA             shift and go to state 6
+
+    statement                      shift and go to state 7
+    instruction                    shift and go to state 2
+    slice_predicate                shift and go to state 3
+    tma_predicate                  shift and go to state 4
+
+state 2
+
+    (2) statement -> instruction .
+
+    SLICE           reduce using rule 2 (statement -> instruction .)
+    TMA             reduce using rule 2 (statement -> instruction .)
+    $end            reduce using rule 2 (statement -> instruction .)
+
+
+state 3
+
+    (18) instruction -> slice_predicate . CLAIM_BAR LPAREN assignment RPAREN
+    (19) instruction -> slice_predicate . SPM_ALOCATE LPAREN assignment RPAREN
+
+    CLAIM_BAR       shift and go to state 8
+    SPM_ALOCATE     shift and go to state 9
+
+
+state 4
+
+    (21) instruction -> tma_predicate . LOAD DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+    (22) instruction -> tma_predicate . LOAD DOT MULTICAST LPAREN assignment RPAREN
+    (23) instruction -> tma_predicate . STORE DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+    (24) instruction -> tma_predicate . STORE DOT MULTICAST LPAREN assignment RPAREN
+
+    LOAD            shift and go to state 10
+    STORE           shift and go to state 11
+
+
+state 5
+
+    (17) slice_predicate -> SLICE . DOT NUMBER DOT
+
+    DOT             shift and go to state 12
+
+
+state 6
+
+    (20) tma_predicate -> TMA . DOT
+
+    DOT             shift and go to state 13
+
+
+state 7
+
+    (1) statement -> statement statement .
+    (1) statement -> statement . statement
+    (1) statement -> . statement statement
+    (2) statement -> . instruction
+    (18) instruction -> . slice_predicate CLAIM_BAR LPAREN assignment RPAREN
+    (19) instruction -> . slice_predicate SPM_ALOCATE LPAREN assignment RPAREN
+    (21) instruction -> . tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+    (22) instruction -> . tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN
+    (23) instruction -> . tma_predicate STORE DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+    (24) instruction -> . tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN
+    (17) slice_predicate -> . SLICE DOT NUMBER DOT
+    (20) tma_predicate -> . TMA DOT
+
+  ! shift/reduce conflict for SLICE resolved as shift
+  ! shift/reduce conflict for TMA resolved as shift
+    $end            reduce using rule 1 (statement -> statement statement .)
+    SLICE           shift and go to state 5
+    TMA             shift and go to state 6
+
+  ! SLICE           [ reduce using rule 1 (statement -> statement statement .) ]
+  ! TMA             [ reduce using rule 1 (statement -> statement statement .) ]
+
+    statement                      shift and go to state 7
+    instruction                    shift and go to state 2
+    slice_predicate                shift and go to state 3
+    tma_predicate                  shift and go to state 4
+
+state 8
+
+    (18) instruction -> slice_predicate CLAIM_BAR . LPAREN assignment RPAREN
+
+    LPAREN          shift and go to state 14
+
+
+state 9
+
+    (19) instruction -> slice_predicate SPM_ALOCATE . LPAREN assignment RPAREN
+
+    LPAREN          shift and go to state 15
+
+
+state 10
+
+    (21) instruction -> tma_predicate LOAD . DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+    (22) instruction -> tma_predicate LOAD . DOT MULTICAST LPAREN assignment RPAREN
+
+    DOT             shift and go to state 16
+
+
+state 11
+
+    (23) instruction -> tma_predicate STORE . DOT SLICE DOT NUMBER LPAREN assignment RPAREN
+    (24) instruction -> tma_predicate STORE . DOT MULTICAST LPAREN assignment RPAREN
+
+    DOT             shift and go to state 17
+
+
+state 12
+
+    (17) slice_predicate -> SLICE DOT . NUMBER DOT
+
+    NUMBER          shift and go to state 18
+
+
+state 13
+
+    (20) tma_predicate -> TMA DOT .
+
+    LOAD            reduce using rule 20 (tma_predicate -> TMA DOT .)
+    STORE           reduce using rule 20 (tma_predicate -> TMA DOT .)
+
+
+state 14
+
+    (18) instruction -> slice_predicate CLAIM_BAR LPAREN . assignment RPAREN
+    (12) assignment -> . assignment COMMA assignment
+    (13) assignment -> . empty
+    (14) assignment -> . NUMBER
+    (15) assignment -> . IDENTIFIER
+    (16) assignment -> . IDENTIFIER ASSIGN expression
+    (11) empty -> .
+
+    NUMBER          shift and go to state 21
+    IDENTIFIER      shift and go to state 22
+    RPAREN          reduce using rule 11 (empty -> .)
+    COMMA           reduce using rule 11 (empty -> .)
+
+    assignment                     shift and go to state 19
+    empty                          shift and go to state 20
+
+state 15
+
+    (19) instruction -> slice_predicate SPM_ALOCATE LPAREN . assignment RPAREN
+    (12) assignment -> . assignment COMMA assignment
+    (13) assignment -> . empty
+    (14) assignment -> . NUMBER
+    (15) assignment -> . IDENTIFIER
+    (16) assignment -> . IDENTIFIER ASSIGN expression
+    (11) empty -> .
+
+    NUMBER          shift and go to state 21
+    IDENTIFIER      shift and go to state 22
+    RPAREN          reduce using rule 11 (empty -> .)
+    COMMA           reduce using rule 11 (empty -> .)
+
+    assignment                     shift and go to state 23
+    empty                          shift and go to state 20
+
+state 16
+
+    (21) instruction -> tma_predicate LOAD DOT . SLICE DOT NUMBER LPAREN assignment RPAREN
+    (22) instruction -> tma_predicate LOAD DOT . MULTICAST LPAREN assignment RPAREN
+
+    SLICE           shift and go to state 24
+    MULTICAST       shift and go to state 25
+
+
+state 17
+
+    (23) instruction -> tma_predicate STORE DOT . SLICE DOT NUMBER LPAREN assignment RPAREN
+    (24) instruction -> tma_predicate STORE DOT . MULTICAST LPAREN assignment RPAREN
+
+    SLICE           shift and go to state 26
+    MULTICAST       shift and go to state 27
+
+
+state 18
+
+    (17) slice_predicate -> SLICE DOT NUMBER . DOT
+
+    DOT             shift and go to state 28
+
+
+state 19
+
+    (18) instruction -> slice_predicate CLAIM_BAR LPAREN assignment . RPAREN
+    (12) assignment -> assignment . COMMA assignment
+
+    RPAREN          shift and go to state 29
+    COMMA           shift and go to state 30
+
+
+state 20
+
+    (13) assignment -> empty .
+
+    RPAREN          reduce using rule 13 (assignment -> empty .)
+    COMMA           reduce using rule 13 (assignment -> empty .)
+
+
+state 21
+
+    (14) assignment -> NUMBER .
+
+    RPAREN          reduce using rule 14 (assignment -> NUMBER .)
+    COMMA           reduce using rule 14 (assignment -> NUMBER .)
+
+
+state 22
+
+    (15) assignment -> IDENTIFIER .
+    (16) assignment -> IDENTIFIER . ASSIGN expression
+
+    RPAREN          reduce using rule 15 (assignment -> IDENTIFIER .)
+    COMMA           reduce using rule 15 (assignment -> IDENTIFIER .)
+    ASSIGN          shift and go to state 31
+
+
+state 23
+
+    (19) instruction -> slice_predicate SPM_ALOCATE LPAREN assignment . RPAREN
+    (12) assignment -> assignment . COMMA assignment
+
+    RPAREN          shift and go to state 32
+    COMMA           shift and go to state 30
+
+
+state 24
+
+    (21) instruction -> tma_predicate LOAD DOT SLICE . DOT NUMBER LPAREN assignment RPAREN
+
+    DOT             shift and go to state 33
+
+
+state 25
+
+    (22) instruction -> tma_predicate LOAD DOT MULTICAST . LPAREN assignment RPAREN
+
+    LPAREN          shift and go to state 34
+
+
+state 26
+
+    (23) instruction -> tma_predicate STORE DOT SLICE . DOT NUMBER LPAREN assignment RPAREN
+
+    DOT             shift and go to state 35
+
+
+state 27
+
+    (24) instruction -> tma_predicate STORE DOT MULTICAST . LPAREN assignment RPAREN
+
+    LPAREN          shift and go to state 36
+
+
+state 28
+
+    (17) slice_predicate -> SLICE DOT NUMBER DOT .
+
+    CLAIM_BAR       reduce using rule 17 (slice_predicate -> SLICE DOT NUMBER DOT .)
+    SPM_ALOCATE     reduce using rule 17 (slice_predicate -> SLICE DOT NUMBER DOT .)
+
+
+state 29
+
+    (18) instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN .
+
+    SLICE           reduce using rule 18 (instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN .)
+    TMA             reduce using rule 18 (instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN .)
+    $end            reduce using rule 18 (instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN .)
+
+
+state 30
+
+    (12) assignment -> assignment COMMA . assignment
+    (12) assignment -> . assignment COMMA assignment
+    (13) assignment -> . empty
+    (14) assignment -> . NUMBER
+    (15) assignment -> . IDENTIFIER
+    (16) assignment -> . IDENTIFIER ASSIGN expression
+    (11) empty -> .
+
+    NUMBER          shift and go to state 21
+    IDENTIFIER      shift and go to state 22
+    COMMA           reduce using rule 11 (empty -> .)
+    RPAREN          reduce using rule 11 (empty -> .)
+
+    assignment                     shift and go to state 37
+    empty                          shift and go to state 20
+
+state 31
+
+    (16) assignment -> IDENTIFIER ASSIGN . expression
+    (3) expression -> . term
+    (4) expression -> . expression PLUS term
+    (5) expression -> . expression MINUS term
+    (6) term -> . factor
+    (7) term -> . term TIMES factor
+    (8) term -> . term DIVIDE factor
+    (9) factor -> . NUMBER
+    (10) factor -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 41
+    LPAREN          shift and go to state 42
+
+    expression                     shift and go to state 38
+    term                           shift and go to state 39
+    factor                         shift and go to state 40
+
+state 32
+
+    (19) instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN .
+
+    SLICE           reduce using rule 19 (instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN .)
+    TMA             reduce using rule 19 (instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN .)
+    $end            reduce using rule 19 (instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN .)
+
+
+state 33
+
+    (21) instruction -> tma_predicate LOAD DOT SLICE DOT . NUMBER LPAREN assignment RPAREN
+
+    NUMBER          shift and go to state 43
+
+
+state 34
+
+    (22) instruction -> tma_predicate LOAD DOT MULTICAST LPAREN . assignment RPAREN
+    (12) assignment -> . assignment COMMA assignment
+    (13) assignment -> . empty
+    (14) assignment -> . NUMBER
+    (15) assignment -> . IDENTIFIER
+    (16) assignment -> . IDENTIFIER ASSIGN expression
+    (11) empty -> .
+
+    NUMBER          shift and go to state 21
+    IDENTIFIER      shift and go to state 22
+    RPAREN          reduce using rule 11 (empty -> .)
+    COMMA           reduce using rule 11 (empty -> .)
+
+    assignment                     shift and go to state 44
+    empty                          shift and go to state 20
+
+state 35
+
+    (23) instruction -> tma_predicate STORE DOT SLICE DOT . NUMBER LPAREN assignment RPAREN
+
+    NUMBER          shift and go to state 45
+
+
+state 36
+
+    (24) instruction -> tma_predicate STORE DOT MULTICAST LPAREN . assignment RPAREN
+    (12) assignment -> . assignment COMMA assignment
+    (13) assignment -> . empty
+    (14) assignment -> . NUMBER
+    (15) assignment -> . IDENTIFIER
+    (16) assignment -> . IDENTIFIER ASSIGN expression
+    (11) empty -> .
+
+    NUMBER          shift and go to state 21
+    IDENTIFIER      shift and go to state 22
+    RPAREN          reduce using rule 11 (empty -> .)
+    COMMA           reduce using rule 11 (empty -> .)
+
+    assignment                     shift and go to state 46
+    empty                          shift and go to state 20
+
+state 37
+
+    (12) assignment -> assignment COMMA assignment .
+    (12) assignment -> assignment . COMMA assignment
+
+  ! shift/reduce conflict for COMMA resolved as shift
+    RPAREN          reduce using rule 12 (assignment -> assignment COMMA assignment .)
+    COMMA           shift and go to state 30
+
+  ! COMMA           [ reduce using rule 12 (assignment -> assignment COMMA assignment .) ]
+
+
+state 38
+
+    (16) assignment -> IDENTIFIER ASSIGN expression .
+    (4) expression -> expression . PLUS term
+    (5) expression -> expression . MINUS term
+
+    RPAREN          reduce using rule 16 (assignment -> IDENTIFIER ASSIGN expression .)
+    COMMA           reduce using rule 16 (assignment -> IDENTIFIER ASSIGN expression .)
+    PLUS            shift and go to state 47
+    MINUS           shift and go to state 48
+
+
+state 39
+
+    (3) expression -> term .
+    (7) term -> term . TIMES factor
+    (8) term -> term . DIVIDE factor
+
+    PLUS            reduce using rule 3 (expression -> term .)
+    MINUS           reduce using rule 3 (expression -> term .)
+    RPAREN          reduce using rule 3 (expression -> term .)
+    COMMA           reduce using rule 3 (expression -> term .)
+    TIMES           shift and go to state 49
+    DIVIDE          shift and go to state 50
+
+
+state 40
+
+    (6) term -> factor .
+
+    TIMES           reduce using rule 6 (term -> factor .)
+    DIVIDE          reduce using rule 6 (term -> factor .)
+    PLUS            reduce using rule 6 (term -> factor .)
+    MINUS           reduce using rule 6 (term -> factor .)
+    RPAREN          reduce using rule 6 (term -> factor .)
+    COMMA           reduce using rule 6 (term -> factor .)
+
+
+state 41
+
+    (9) factor -> NUMBER .
+
+    TIMES           reduce using rule 9 (factor -> NUMBER .)
+    DIVIDE          reduce using rule 9 (factor -> NUMBER .)
+    PLUS            reduce using rule 9 (factor -> NUMBER .)
+    MINUS           reduce using rule 9 (factor -> NUMBER .)
+    RPAREN          reduce using rule 9 (factor -> NUMBER .)
+    COMMA           reduce using rule 9 (factor -> NUMBER .)
+
+
+state 42
+
+    (10) factor -> LPAREN . expression RPAREN
+    (3) expression -> . term
+    (4) expression -> . expression PLUS term
+    (5) expression -> . expression MINUS term
+    (6) term -> . factor
+    (7) term -> . term TIMES factor
+    (8) term -> . term DIVIDE factor
+    (9) factor -> . NUMBER
+    (10) factor -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 41
+    LPAREN          shift and go to state 42
+
+    expression                     shift and go to state 51
+    term                           shift and go to state 39
+    factor                         shift and go to state 40
+
+state 43
+
+    (21) instruction -> tma_predicate LOAD DOT SLICE DOT NUMBER . LPAREN assignment RPAREN
+
+    LPAREN          shift and go to state 52
+
+
+state 44
+
+    (22) instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment . RPAREN
+    (12) assignment -> assignment . COMMA assignment
+
+    RPAREN          shift and go to state 53
+    COMMA           shift and go to state 30
+
+
+state 45
+
+    (23) instruction -> tma_predicate STORE DOT SLICE DOT NUMBER . LPAREN assignment RPAREN
+
+    LPAREN          shift and go to state 54
+
+
+state 46
+
+    (24) instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment . RPAREN
+    (12) assignment -> assignment . COMMA assignment
+
+    RPAREN          shift and go to state 55
+    COMMA           shift and go to state 30
+
+
+state 47
+
+    (4) expression -> expression PLUS . term
+    (6) term -> . factor
+    (7) term -> . term TIMES factor
+    (8) term -> . term DIVIDE factor
+    (9) factor -> . NUMBER
+    (10) factor -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 41
+    LPAREN          shift and go to state 42
+
+    term                           shift and go to state 56
+    factor                         shift and go to state 40
+
+state 48
+
+    (5) expression -> expression MINUS . term
+    (6) term -> . factor
+    (7) term -> . term TIMES factor
+    (8) term -> . term DIVIDE factor
+    (9) factor -> . NUMBER
+    (10) factor -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 41
+    LPAREN          shift and go to state 42
+
+    term                           shift and go to state 57
+    factor                         shift and go to state 40
+
+state 49
+
+    (7) term -> term TIMES . factor
+    (9) factor -> . NUMBER
+    (10) factor -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 41
+    LPAREN          shift and go to state 42
+
+    factor                         shift and go to state 58
+
+state 50
+
+    (8) term -> term DIVIDE . factor
+    (9) factor -> . NUMBER
+    (10) factor -> . LPAREN expression RPAREN
+
+    NUMBER          shift and go to state 41
+    LPAREN          shift and go to state 42
+
+    factor                         shift and go to state 59
+
+state 51
+
+    (10) factor -> LPAREN expression . RPAREN
+    (4) expression -> expression . PLUS term
+    (5) expression -> expression . MINUS term
+
+    RPAREN          shift and go to state 60
+    PLUS            shift and go to state 47
+    MINUS           shift and go to state 48
+
+
+state 52
+
+    (21) instruction -> tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN . assignment RPAREN
+    (12) assignment -> . assignment COMMA assignment
+    (13) assignment -> . empty
+    (14) assignment -> . NUMBER
+    (15) assignment -> . IDENTIFIER
+    (16) assignment -> . IDENTIFIER ASSIGN expression
+    (11) empty -> .
+
+    NUMBER          shift and go to state 21
+    IDENTIFIER      shift and go to state 22
+    RPAREN          reduce using rule 11 (empty -> .)
+    COMMA           reduce using rule 11 (empty -> .)
+
+    assignment                     shift and go to state 61
+    empty                          shift and go to state 20
+
+state 53
+
+    (22) instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN .
+
+    SLICE           reduce using rule 22 (instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN .)
+    TMA             reduce using rule 22 (instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN .)
+    $end            reduce using rule 22 (instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN .)
+
+
+state 54
+
+    (23) instruction -> tma_predicate STORE DOT SLICE DOT NUMBER LPAREN . assignment RPAREN
+    (12) assignment -> . assignment COMMA assignment
+    (13) assignment -> . empty
+    (14) assignment -> . NUMBER
+    (15) assignment -> . IDENTIFIER
+    (16) assignment -> . IDENTIFIER ASSIGN expression
+    (11) empty -> .
+
+    NUMBER          shift and go to state 21
+    IDENTIFIER      shift and go to state 22
+    RPAREN          reduce using rule 11 (empty -> .)
+    COMMA           reduce using rule 11 (empty -> .)
+
+    assignment                     shift and go to state 62
+    empty                          shift and go to state 20
+
+state 55
+
+    (24) instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN .
+
+    SLICE           reduce using rule 24 (instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN .)
+    TMA             reduce using rule 24 (instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN .)
+    $end            reduce using rule 24 (instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN .)
+
+
+state 56
+
+    (4) expression -> expression PLUS term .
+    (7) term -> term . TIMES factor
+    (8) term -> term . DIVIDE factor
+
+    PLUS            reduce using rule 4 (expression -> expression PLUS term .)
+    MINUS           reduce using rule 4 (expression -> expression PLUS term .)
+    RPAREN          reduce using rule 4 (expression -> expression PLUS term .)
+    COMMA           reduce using rule 4 (expression -> expression PLUS term .)
+    TIMES           shift and go to state 49
+    DIVIDE          shift and go to state 50
+
+
+state 57
+
+    (5) expression -> expression MINUS term .
+    (7) term -> term . TIMES factor
+    (8) term -> term . DIVIDE factor
+
+    PLUS            reduce using rule 5 (expression -> expression MINUS term .)
+    MINUS           reduce using rule 5 (expression -> expression MINUS term .)
+    RPAREN          reduce using rule 5 (expression -> expression MINUS term .)
+    COMMA           reduce using rule 5 (expression -> expression MINUS term .)
+    TIMES           shift and go to state 49
+    DIVIDE          shift and go to state 50
+
+
+state 58
+
+    (7) term -> term TIMES factor .
+
+    TIMES           reduce using rule 7 (term -> term TIMES factor .)
+    DIVIDE          reduce using rule 7 (term -> term TIMES factor .)
+    PLUS            reduce using rule 7 (term -> term TIMES factor .)
+    MINUS           reduce using rule 7 (term -> term TIMES factor .)
+    RPAREN          reduce using rule 7 (term -> term TIMES factor .)
+    COMMA           reduce using rule 7 (term -> term TIMES factor .)
+
+
+state 59
+
+    (8) term -> term DIVIDE factor .
+
+    TIMES           reduce using rule 8 (term -> term DIVIDE factor .)
+    DIVIDE          reduce using rule 8 (term -> term DIVIDE factor .)
+    PLUS            reduce using rule 8 (term -> term DIVIDE factor .)
+    MINUS           reduce using rule 8 (term -> term DIVIDE factor .)
+    RPAREN          reduce using rule 8 (term -> term DIVIDE factor .)
+    COMMA           reduce using rule 8 (term -> term DIVIDE factor .)
+
+
+state 60
+
+    (10) factor -> LPAREN expression RPAREN .
+
+    TIMES           reduce using rule 10 (factor -> LPAREN expression RPAREN .)
+    DIVIDE          reduce using rule 10 (factor -> LPAREN expression RPAREN .)
+    PLUS            reduce using rule 10 (factor -> LPAREN expression RPAREN .)
+    MINUS           reduce using rule 10 (factor -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 10 (factor -> LPAREN expression RPAREN .)
+    COMMA           reduce using rule 10 (factor -> LPAREN expression RPAREN .)
+
+
+state 61
+
+    (21) instruction -> tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN assignment . RPAREN
+    (12) assignment -> assignment . COMMA assignment
+
+    RPAREN          shift and go to state 63
+    COMMA           shift and go to state 30
+
+
+state 62
+
+    (23) instruction -> tma_predicate STORE DOT SLICE DOT NUMBER LPAREN assignment . RPAREN
+    (12) assignment -> assignment . COMMA assignment
+
+    RPAREN          shift and go to state 64
+    COMMA           shift and go to state 30
+
+
+state 63
+
+    (21) instruction -> tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN assignment RPAREN .
+
+    SLICE           reduce using rule 21 (instruction -> tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN assignment RPAREN .)
+    TMA             reduce using rule 21 (instruction -> tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN assignment RPAREN .)
+    $end            reduce using rule 21 (instruction -> tma_predicate LOAD DOT SLICE DOT NUMBER LPAREN assignment RPAREN .)
+
+
+state 64
+
+    (23) instruction -> tma_predicate STORE DOT SLICE DOT NUMBER LPAREN assignment RPAREN .
+
+    SLICE           reduce using rule 23 (instruction -> tma_predicate STORE DOT SLICE DOT NUMBER LPAREN assignment RPAREN .)
+    TMA             reduce using rule 23 (instruction -> tma_predicate STORE DOT SLICE DOT NUMBER LPAREN assignment RPAREN .)
+    $end            reduce using rule 23 (instruction -> tma_predicate STORE DOT SLICE DOT NUMBER LPAREN assignment RPAREN .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for SLICE in state 7 resolved as shift
+WARNING: shift/reduce conflict for TMA in state 7 resolved as shift
+WARNING: shift/reduce conflict for COMMA in state 37 resolved as shift
