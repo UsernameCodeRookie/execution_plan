@@ -1,1 +1,2 @@
-tma.load.slice.1()
+slice.0.spm_allocate(q_spm0,64,128,float16)
+slice.1.spm_allocate(q_spm1,64,128,float16)

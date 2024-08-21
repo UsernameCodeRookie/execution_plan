@@ -1,6 +1,6 @@
 import simpy
 import numpy as np
-from simulator import Slice, ScratchPadMemory
+from objects import Slice, ScratchPadMemory
 
 
 env = simpy.Environment()

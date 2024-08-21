@@ -5,12 +5,12 @@ from lexer import tokens
 
 def p_statements(p):
     'statement : statement statement'
-    p[0] = p[2]
+    p[0] = p[1] + p[2]
 
 
 def p_statement_instruction(p):
     'statement : instruction'
-    p[0] = p[1]
+    p[0] = [p[1]]
 
 
 def p_expression_term(p):
@@ -84,7 +84,7 @@ def p_assignment_identifier(p):
 
 def p_assignment(p):
     'assignment : IDENTIFIER ASSIGN expression'
-    p[0] = [(p[1], p[3])]
+    p[0] = [p[1], p[3]]
 
 
 def p_slice_predicate_slice_number(p):
@@ -96,11 +96,13 @@ def p_slice_predicate_slice_number(p):
 def p_instruction_slice_claim_bar(p):
     'instruction : slice_predicate CLAIM_BAR LPAREN assignment RPAREN'
     print('Claiming barrier with assignment: %s' % p[4])
+    p[0] = ('claim_barrier', p[4])
 
 
 def p_instruction_slice_spm_alocate(p):
     'instruction : slice_predicate SPM_ALOCATE LPAREN assignment RPAREN'
     print('Alocating SPM with assignment: %s' % p[4])
+    p[0] = ('spm_allocate', p[4])
 
 
 def p_tma_predicate(p):

@@ -8,7 +8,7 @@ tokens = (
 reserved = {
     'claim_bar': 'CLAIM_BAR',
     'slice': 'SLICE',
-    'spm_alocate': 'SPM_ALOCATE',
+    'spm_allocate': 'SPM_ALOCATE',
     'tma': 'TMA',
     'multicast': 'MULTICAST',
     'load': 'LOAD',
