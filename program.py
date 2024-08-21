@@ -1,11 +1,12 @@
 from objects import *
 from parser import parser
+from functools import partial
 
 # batch
 BATCH_SIZE = 50
 
 
-class Program():
+class ProgramIterator():
 
     def __init__(self, *args):
 
@@ -27,12 +28,8 @@ class Program():
             self.res_batch = parse_result
 
         instr, args = self.res_batch.pop(0)
-        match instr:
-            case 'spm_allocate':
-                slice_idx, id, rows, cols, dtype = args
-                print(f'Program: SPM {slice_idx} allocate {
-                      id} with shape {rows}x{cols} of type {dtype}')
-                self.slices[slice_idx].spm_allocate(id, rows, cols, dtype)
+
+        return self.parse_program(instr, args)
 
     def read_file(self, size):
         lines = []
@@ -47,8 +44,24 @@ class Program():
             lines.append(line)
         return ''.join(lines)
 
+    def parse_program(self, instr, args):
+        program = []
+
+        match instr:
+            case 'spm_allocate':
+                slice_idx, id, rows, cols, dtype = args
+                print(f'Program: SPM {slice_idx} allocate {
+                      id} with shape {rows}x{cols} of type {dtype}')
+                # self.slices[slice_idx].spm_allocate(id, rows, cols, dtype)
+                func = partial(
+                    self.slices[slice_idx].spm_allocate, id, rows, cols, dtype)
+                program.append(func)
+
+        return program
+
 
 if __name__ == '__main__':
     slices = [Slice(None) for _ in range(16)]
-    program = Program(slices)
-    next(program)
+    program = ProgramIterator(slices)
+    func = next(program)
+    func()

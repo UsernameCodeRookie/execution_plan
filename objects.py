@@ -89,8 +89,14 @@ class CPU():
     def __init__(self, env: simpy.Environment):
         self.env = env
 
-    def run_program(self, program):
+    def run_program(self, program_iterator):
         while True:
             yield self.env.timeout(CPU_CYCLE_TIME)
-            instr = next(program)
-            yield self.env.process(instr())
+            program = next(program_iterator)
+            for instr in program:
+                yield self.env.process(instr)
+
+
+class TMA():
+    def __init__(self, env: simpy.Environment):
+        self.env = env

@@ -1,5 +1,5 @@
 from objects import Slice, CPU
-from program import Program
+from program import ProgramIterator
 import simpy
 
 
@@ -9,7 +9,7 @@ class Simulator():
         self.slices = [Slice(self.env) for _ in range(16)]
         self.cpu = CPU(self.env)
 
-        self.program = Program(self.slices)
+        self.program = ProgramIterator(self.slices)
 
     def run(self, simtime=100):
         self.env.run(until=simtime)
