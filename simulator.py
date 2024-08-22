@@ -6,7 +6,7 @@ import simpy
 class Simulator():
     def __init__(self):
         self.env = simpy.Environment()
-        self.slices = [Slice(self.env) for _ in range(16)]
+        self.slices = [Slice(self.env, i) for i in range(16)]
         self.cpu = CPU(self.env)
 
         self.program = ProgramIterator(self.slices)
@@ -19,3 +19,9 @@ class Simulator():
 
     def init(self):
         self.env.process(self.cpu.run_program(self.program))
+
+
+if __name__ == '__main__':
+    sim = Simulator()
+    sim.init()
+    sim.run()

@@ -1,2 +1,6 @@
 slice.0.spm_allocate(q_spm0,64,128,float16)
-slice.1.spm_allocate(q_spm1,64,128,float16)
+slice.0.spm_allocate(o_spm0,64,128,float16)
+slice.0.claim_bar(q_bar0,64,128,float16)
+slice.0.claim_bar(o_bar0,64,128,float16)
+tma.load.multicast(q[0,0,0,0],q_spm0,mask=[0],set_bar=[q_bar0])
+tma.store.slice.0(o_spm0,o[0,0,0,0],wait_bar=[o_bar0])

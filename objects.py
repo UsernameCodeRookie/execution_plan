@@ -5,15 +5,17 @@ GEMM_TIME = 10
 
 
 class Slice():
-    def __init__(self, env: simpy.Environment):
+    def __init__(self, env: simpy.Environment, index):
         self.env = env
         self.spm = ScratchPadMemory(env)
         self.barriers = {}
+        self.index = index
 
     class Barrier():
-        def __init__(self, env, rows, cols):
+        def __init__(self, env, rows, cols, dtype):
             self.rows = rows
             self.cols = cols
+            self.dtype = dtype
             self.res = simpy.Resource(env)
 
         def has_request(self):
@@ -23,21 +25,38 @@ class Slice():
             return self.res.request()
 
     def spm_allocate(self, *args):
+        print(f'[{self.env.now}]Simulator: Slice {
+              self.index} spm_allocate {args}')
         self.spm.allocate(*args)
+        yield self.env.timeout(1)
 
-    def claim_barrier(self, barrier_id, rows, cols):
-        self.barriers[barrier_id] = self.Barrier(self.env, rows, cols)
+    def claim_barrier(self, barrier_id, rows, cols, dtype):
+        print(f'[{self.env.now}]Simulator: Slice {
+              self.index} claim_barrier {barrier_id}')
+        self.barriers[barrier_id] = self.Barrier(self.env, rows, cols, dtype)
+        yield self.env.timeout(1)
 
-    def load_set_barrier(self, allocate_id, array, barrier_id):
+    def load_set_barrier(self, allocate_id, barrier_id, array):
+        print(f'[{self.env.now}]Simulator: Slice {self.index} load_set_barrier {
+              allocate_id} {barrier_id}')
         with self.barriers[barrier_id].request() as req:
             yield req
 
             yield self.env.process(self.spm.write(allocate_id, array))
 
-    def store_wait_barrier(self, allocate_id, barrier_id):
-        while self.barriers[barrier_id].has_request():
+    # def store_wait_barrier(self, allocate_id, barrier_id, array):
+    #     print(f'[{self.env.now}]Simulator: Slice {self.index} store_wait_barrier {
+    #           allocate_id} {barrier_id}')
+    #     while self.barriers[barrier_id].has_request():
+    #         yield self.env.timeout(1)
+    #     yield self.env.process(self.spm.read(allocate_id, array))
+
+    def store_wait_barrier(self, allocate_id, barrier_id_list, array):
+        print(f'[{self.env.now}]Simulator: Slice {self.index} store_wait_barrier {
+              allocate_id} {barrier_id_list}')
+        while any([self.barriers[barrier_id].has_request() for barrier_id in barrier_id_list]):
             yield self.env.timeout(1)
-        yield self.env.process(self.spm.read(allocate_id))
+        yield self.env.process(self.spm.read(allocate_id, array))
 
     def gemm(self, q, k, o, wait_barrier_id, set_barrier_id):
         while self.barriers[wait_barrier_id].has_request():
@@ -63,16 +82,16 @@ class ScratchPadMemory():
         array = np.zeros((rows, cols), dtype=dtype)
         self.memory[id] = array
 
-    def read(self, id):
-        print(f'{self.env.now}: spm read {id} start')
+    def read(self, id, array):
+        print(f'[{self.env.now}]Simulator: spm read {id} start')
         yield self.env.timeout(SPM_READ_TIME)
-        print(f'{self.env.now}: spm read {id} end')
-        return self.memory[id]
+        print(f'[{self.env.now}]Simulator: spm read {id} end')
+        array = self.memory[id]
 
     def write(self, id, array):
-        print(f'{self.env.now}: spm write {id} start')
+        print(f'[{self.env.now}]Simulator: spm write {id} start')
         yield self.env.timeout(SPM_WRITE_TIME)
-        print(f'{self.env.now}: spm write {id} end')
+        print(f'[{self.env.now}]Simulator: spm write {id} end')
         self.memory[id] = array
 
     def get(self, *args):
@@ -93,6 +112,10 @@ class CPU():
         while True:
             yield self.env.timeout(CPU_CYCLE_TIME)
             program = next(program_iterator)
+
+            if program is None:
+                return
+
             for instr in program:
                 yield self.env.process(instr)
 

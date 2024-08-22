@@ -2,7 +2,7 @@ import ply.lex as lex
 
 tokens = (
     'NUMBER', 'CLAIM_BAR', 'COMMA', 'IDENTIFIER', 'LPAREN', 'RPAREN', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'DOT',
-    'SLICE', 'SPM_ALOCATE', 'ASSIGN', 'TMA', 'MULTICAST', 'LOAD', 'STORE'
+    'SLICE', 'SPM_ALOCATE', 'ASSIGN', 'TMA', 'MULTICAST', 'LOAD', 'STORE', 'LBRACKET', 'RBRACKET'
 )
 
 reserved = {
@@ -18,6 +18,8 @@ reserved = {
 t_COMMA = r','
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
+t_LBRACKET = r'\['
+t_RBRACKET = r'\]'
 t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
