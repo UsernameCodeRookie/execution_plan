@@ -1,6 +1,7 @@
 from objects import Slice, CPU
 from program import ProgramIterator
 import simpy
+import logging
 
 
 class Simulator():
@@ -22,6 +23,7 @@ class Simulator():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=9, format='%(message)s')
     sim = Simulator()
     sim.init()
     sim.run()

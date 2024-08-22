@@ -1,5 +1,6 @@
 import numpy as np
 import simpy
+import logging
 
 GEMM_TIME = 10
 
@@ -29,19 +30,19 @@ class Slice():
             return self.res.release(self.req)
 
     def spm_allocate(self, *args):
-        print(f'[{self.env.now}]Simulator: Slice {
-              self.index} spm_allocate {args}')
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {
+            self.index} spm_allocate {args}')
         self.spm.allocate(*args)
         yield self.env.timeout(0)
 
     def claim_barrier(self, barrier_id, rows, cols, dtype):
-        print(f'[{self.env.now}]Simulator: Slice {
-              self.index} claim_barrier {barrier_id}')
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {
+            self.index} claim_barrier {barrier_id}')
         self.barriers[barrier_id] = self.Barrier(self.env, rows, cols, dtype)
         yield self.env.timeout(0)
 
     # def load_set_barrier(self, allocate_id, barrier_id, array):
-    #     print(f'[{self.env.now}]Simulator: Slice {self.index} load_set_barrier {
+    #     logging.log(0, f'[{self.env.now}]Simulator: Slice {self.index} load_set_barrier {
     #           allocate_id} {barrier_id}')
     #     with self.barriers[barrier_id].request() as req:
     #         yield req
@@ -49,8 +50,8 @@ class Slice():
     #         yield self.env.process(self.spm.write(allocate_id, array))
 
     def load_set_barrier(self, allocate_id, barrier_id_list, array):
-        print(f'[{self.env.now}]Simulator: Slice {self.index} load_set_barrier {
-              allocate_id} {barrier_id_list}')
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {self.index} load_set_barrier {
+            allocate_id} {barrier_id_list}')
         # with self.barriers[barrier_id].request() as req:
         #     yield req
 
@@ -64,15 +65,15 @@ class Slice():
             yield self.barriers[barrier_id].release()
 
     # def store_wait_barrier(self, allocate_id, barrier_id, array):
-    #     print(f'[{self.env.now}]Simulator: Slice {self.index} store_wait_barrier {
+    #     logging.log(0, f'[{self.env.now}]Simulator: Slice {self.index} store_wait_barrier {
     #           allocate_id} {barrier_id}')
     #     while self.barriers[barrier_id].has_request():
     #         yield self.env.timeout(1)
     #     yield self.env.process(self.spm.read(allocate_id, array))
 
     def store_wait_barrier(self, allocate_id, barrier_id_list, array):
-        print(f'[{self.env.now}]Simulator: Slice {self.index} store_wait_barrier {
-              allocate_id} {barrier_id_list}')
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {self.index} store_wait_barrier {
+            allocate_id} {barrier_id_list}')
         while any([self.barriers[barrier_id].has_request() for barrier_id in barrier_id_list]):
             yield self.env.timeout(1)
         yield self.env.process(self.spm.read(allocate_id, array))
@@ -102,15 +103,15 @@ class ScratchPadMemory():
         self.memory[id] = array
 
     def read(self, id, array):
-        print(f'[{self.env.now}]Simulator: spm read {id} start')
+        logging.log(16, f'[{self.env.now}]Simulator: spm read {id} start')
         yield self.env.timeout(SPM_READ_TIME)
-        print(f'[{self.env.now}]Simulator: spm read {id} end')
+        logging.log(16, f'[{self.env.now}]Simulator: spm read {id} end')
         array = self.memory[id]
 
     def write(self, id, array):
-        print(f'[{self.env.now}]Simulator: spm write {id} start')
+        logging.log(16, f'[{self.env.now}]Simulator: spm write {id} start')
         yield self.env.timeout(SPM_WRITE_TIME)
-        print(f'[{self.env.now}]Simulator: spm write {id} end')
+        logging.log(16, f'[{self.env.now}]Simulator: spm write {id} end')
         self.memory[id] = array
 
     def get(self, *args):

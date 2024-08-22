@@ -2,6 +2,7 @@ from objects import *
 from parser import parser
 from functools import partial
 from typing import List
+import logging
 
 # batch
 BATCH_SIZE = 50
@@ -58,8 +59,8 @@ class ProgramIterator():
         match instr:
             case 'spm_allocate':
                 slice_idx, id, rows, cols, dtype = args
-                print(f'Program: SPM {slice_idx} allocate {
-                      id} with shape {rows}x{cols} of type {dtype}')
+                logging.log(8, f'Program: SPM {slice_idx} allocate {
+                    id} with shape {rows}x{cols} of type {dtype}')
                 self.slices[slice_idx].spm_allocate(id, rows, cols, dtype)
                 func = self.slices[slice_idx].spm_allocate(
                     id, rows, cols, dtype)
@@ -67,8 +68,8 @@ class ProgramIterator():
 
             case 'claim_barrier':
                 slice_idx, id, rows, cols, dtype = args
-                print(f'Program: Slice {slice_idx} claim Barrier {
-                      id} with shape {rows}x{cols} of type {dtype}')
+                logging.log(8, f'Program: Slice {slice_idx} claim Barrier {
+                    id} with shape {rows}x{cols} of type {dtype}')
                 func = self.slices[slice_idx].claim_barrier(
                     id, rows, cols, dtype)
                 program.append(func)
@@ -78,8 +79,8 @@ class ProgramIterator():
                 _, wait_bar = wait_bar  # ('wait_bar', id)
                 tensor_id, tile_pos = tile
 
-                print(f'Program: TMA store from Slice {slice_idx} to Tensor {tensor_id} Tile {
-                      tile_pos} and wait Barrier {wait_bar}')
+                logging.log(8, f'Program: TMA store from Slice {slice_idx} to Tensor {tensor_id} Tile {
+                    tile_pos} and wait Barrier {wait_bar}')
 
                 array = None
                 slice_to_tma = self.slices[slice_idx].store_wait_barrier(
@@ -92,8 +93,8 @@ class ProgramIterator():
                 _, mask = mask
                 _, set_bar = set_bar
 
-                print(f'Program: TMA load multicast from Tensor {tensor_id} Tile {
-                      tile_pos} to Slice {mask} and set Barrier {set_bar}')
+                logging.log(8, f'Program: TMA load multicast from Tensor {tensor_id} Tile {
+                    tile_pos} to Slice {mask} and set Barrier {set_bar}')
 
                 array = None
                 for i in mask:
