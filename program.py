@@ -8,7 +8,7 @@ import logging
 BATCH_SIZE = 50
 
 
-class ProgramIterator():
+class CpuIterator():
 
     def __init__(self, *args):
 
@@ -107,7 +107,7 @@ class ProgramIterator():
 
 if __name__ == '__main__':
     slices = [Slice(None, i) for i in range(16)]
-    program = ProgramIterator(slices)
+    program = CpuIterator(slices)
     for func_batch in program:
         for func, args in func_batch:
             func()
