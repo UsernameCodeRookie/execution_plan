@@ -95,6 +95,12 @@ class ProgramIterator():
                 print(f'Program: TMA load multicast from Tensor {tensor_id} Tile {
                       tile_pos} to Slice {mask} and set Barrier {set_bar}')
 
+                array = None
+                for i in mask:
+                    tma_to_slice = self.slices[i].load_set_barrier(
+                        id, set_bar, array)
+                    program.append(tma_to_slice)
+
         return program
 
 
