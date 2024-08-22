@@ -146,7 +146,7 @@ def p_tma_predicate(p):
 
 def p_slice_suffix_slice_number(p):
     'slice_suffix : DOT SLICE DOT NUMBER'
-    logging.log(4, 'Parser: Slicing number with value: %s' % p[4])
+    logging.log(4, 'Parser: Slice number with value: %s' % p[4])
     p[0] = [p[4]]
 
 

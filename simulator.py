@@ -23,7 +23,7 @@ class Simulator():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=9, format='%(message)s')
+    logging.basicConfig(level=0, format='%(message)s')
     sim = Simulator()
     sim.init()
     sim.run()
