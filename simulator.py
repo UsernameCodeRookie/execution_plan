@@ -14,7 +14,7 @@ class Simulator():
 
         self.program = CpuIterator(file_path, self.slices, self.tma)
 
-    def run(self, simtime=100):
+    def run(self, simtime=200):
         self.env.run(until=simtime)
 
     def process(self, event):
@@ -25,7 +25,7 @@ class Simulator():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=0, format='%(message)s')
+    logging.basicConfig(level=16, format='%(message)s')
     sim = Simulator('program.txt')
     sim.init()
     sim.run()

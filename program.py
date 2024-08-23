@@ -97,8 +97,11 @@ class CpuIterator():
                     tile_pos} and wait Barrier {wait_bar}')
 
                 array = np.array([1])
-                slice_to_tma = self.slices[slice_idx].store_wait_barrier(
-                    id, wait_bar, array)
+
+                wait_barrier = self.slices[slice_idx].barrier_wait(wait_bar)
+                program.append(wait_barrier)
+
+                slice_to_tma = self.slices[slice_idx].store(id, array)
                 tma_to_ddr = self.tma.write_ddr(tensor_id, tile_pos, array)
                 program.append(slice_to_tma)
                 program.append(tma_to_ddr)
@@ -111,12 +114,18 @@ class CpuIterator():
                     tile_pos} to Slice {mask} and set Barrier {set_bar}')
 
                 array = np.array([1])
+
+                for i in mask:
+                    barrier_request = self.slices[i].barrier_request(set_bar)
+                    program.append(barrier_request)
+
                 slice_to_tma = self.tma.read_ddr(tensor_id, tile_pos, array)
                 program.append(slice_to_tma)
                 for i in mask:
-                    tma_to_slice = self.slices[i].load_set_barrier(
-                        id, set_bar, array)
+                    tma_to_slice = self.slices[i].load(id, array)
                     program.append(tma_to_slice)
+                    barrier_release = self.slices[i].barrier_release(set_bar)
+                    program.append(barrier_release)
 
             case 'slice_gemm':
                 slice_idx, template_args, q, k, v, wait_bar_list, set_bar_list = args
@@ -124,9 +133,18 @@ class CpuIterator():
                 logging.log(8, f'Program: Slice {slice_idx} GEMM with template args {template_args}, q {
                             q} k{k} v{v}, wait Barrier {wait_bar_list} set Barrier {set_bar_list}')
 
+                barrier_wait = self.slices[slice_idx].barrier_wait(
+                    wait_bar_list)
+                barrier_request = self.slices[slice_idx].barrier_request(
+                    set_bar_list)
                 gemm = self.slices[slice_idx].gemm(
-                    q, k, v, wait_bar_list, set_bar_list)
+                    q, k, v)
+                barrier_release = self.slices[slice_idx].barrier_release(
+                    set_bar_list)
+                program.append(barrier_request)
+                program.append(barrier_wait)
                 program.append(gemm)
+                program.append(barrier_release)
 
         return program
 

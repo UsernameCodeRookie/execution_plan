@@ -3,8 +3,8 @@ import numpy as np
 import logging
 
 
-DDR_READ_TIME = 0
-DDR_WRITE_TIME = 0
+DDR_READ_TIME = 20
+DDR_WRITE_TIME = 20
 
 
 class TMA():
@@ -20,15 +20,19 @@ class TMA():
 
     def read_ddr(self, *args):
         logging.log(16, f'[{self.env.now}]Simulator: TMA read DDR, Tensor {
-                    args[0]}, Tile {args[1]}')
-        self.ddr.read(*args)
+                    args[0]}, Tile {args[1]} start')
         yield self.env.timeout(DDR_READ_TIME)
+        self.ddr.read(*args)
+        logging.log(16, f'[{self.env.now}]Simulator: TMA read DDR, Tensor {
+                    args[0]}, Tile {args[1]} end')
 
     def write_ddr(self, *args):
         logging.log(16, f'[{self.env.now}]Simulator: TMA write DDR, Tensor {
-                    args[0]}, Tile {args[1]}')
-        self.ddr.write(*args)
+                    args[0]}, Tile {args[1]} start')
         yield self.env.timeout(DDR_WRITE_TIME)
+        self.ddr.write(*args)
+        logging.log(16, f'[{self.env.now}]Simulator: TMA write DDR, Tensor {
+                    args[0]}, Tile {args[1]} end')
 
 
 class DDR():

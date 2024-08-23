@@ -2,7 +2,9 @@ import numpy as np
 import simpy
 import logging
 
-GEMM_TIME = 10
+GEMM_TIME = 100
+SPM_READ_TIME = 10
+SPM_WRITE_TIME = 10
 
 
 class Slice():
@@ -40,60 +42,42 @@ class Slice():
         self.barriers[barrier_id] = self.Barrier(self.env, shape, dtype)
         yield self.env.timeout(0)
 
-    # def load_set_barrier(self, allocate_id, barrier_id, array):
-    #     logging.log(0, f'[{self.env.now}]Simulator: Slice {self.index} load_set_barrier {
-    #           allocate_id} {barrier_id}')
-    #     with self.barriers[barrier_id].request() as req:
-    #         yield req
-
-    #         yield self.env.process(self.spm.write(allocate_id, array))
-
-    def load_set_barrier(self, allocate_id, barrier_id_list, array):
-        logging.log(16, f'[{self.env.now}]Simulator: Slice {self.index} load_set_barrier {
-            allocate_id} {barrier_id_list}')
-        # with self.barriers[barrier_id].request() as req:
-        #     yield req
-
-        #     yield self.env.process(self.spm.write(allocate_id, array))
+    def barrier_request(self, barrier_id_list):
         for barrier_id in barrier_id_list:
             yield self.barriers[barrier_id].request()
 
-        yield self.env.process(self.spm.write(allocate_id, array))
-
+    def barrier_release(self, barrier_id_list):
         for barrier_id in barrier_id_list:
             yield self.barriers[barrier_id].release()
 
-    # def store_wait_barrier(self, allocate_id, barrier_id, array):
-    #     logging.log(0, f'[{self.env.now}]Simulator: Slice {self.index} store_wait_barrier {
-    #           allocate_id} {barrier_id}')
-    #     while self.barriers[barrier_id].has_request():
-    #         yield self.env.timeout(1)
-    #     yield self.env.process(self.spm.read(allocate_id, array))
-
-    def store_wait_barrier(self, allocate_id, barrier_id_list, array):
-        logging.log(16, f'[{self.env.now}]Simulator: Slice {self.index} store_wait_barrier {
-            allocate_id} {barrier_id_list}')
+    def barrier_wait(self, barrier_id_list):
         while any([self.barriers[barrier_id].has_request() for barrier_id in barrier_id_list]):
             yield self.env.timeout(1)
-        yield self.env.process(self.spm.read(allocate_id, array))
 
-    def gemm(self, q, k, o, wait_barrier_id_list, set_barrier_id_list):
-        while any([self.barriers[wait_barrier_id].has_request() for wait_barrier_id in wait_barrier_id_list]):
-            yield self.env.timeout(1)
+    def load(self, allocate_id, array):
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {self.index} load {
+            allocate_id} start')
+        self.spm.read(allocate_id, array)
+        yield self.env.timeout(SPM_WRITE_TIME)
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {self.index} load {
+            allocate_id} end')
 
-        for set_barrier_id in set_barrier_id_list:
-            yield self.barriers[set_barrier_id].request()
+    def store(self, allocate_id, array):
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {self.index} store {
+            allocate_id} start')
+        self.spm.write(allocate_id, array)
+        yield self.env.timeout(SPM_WRITE_TIME)
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {self.index} store {
+            allocate_id} end')
 
+    def gemm(self, q, k, o):
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {
+            self.index} gemm {q} {k} {o} start')
         q_a, k_a, o_a = self.spm.get(q, k, o)
         np.matmul(q_a, k_a, out=o_a)
         yield self.env.timeout(GEMM_TIME)
-
-        for set_barrier_id in set_barrier_id_list:
-            yield self.barriers[set_barrier_id].release()
-
-
-SPM_READ_TIME = 10
-SPM_WRITE_TIME = 10
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {
+                    self.index} gemm {q} {k} {o} end')
 
 
 class ScratchPadMemory():
@@ -106,15 +90,9 @@ class ScratchPadMemory():
         self.memory[id] = array
 
     def read(self, id, array):
-        logging.log(16, f'[{self.env.now}]Simulator: spm read {id} start')
-        yield self.env.timeout(SPM_READ_TIME)
-        logging.log(16, f'[{self.env.now}]Simulator: spm read {id} end')
         array = self.memory[id]
 
     def write(self, id, array):
-        logging.log(16, f'[{self.env.now}]Simulator: spm write {id} start')
-        yield self.env.timeout(SPM_WRITE_TIME)
-        logging.log(16, f'[{self.env.now}]Simulator: spm write {id} end')
         self.memory[id] = array
 
     def get(self, *args):
