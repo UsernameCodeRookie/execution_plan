@@ -12,8 +12,8 @@ class CpuIterator():
 
     def __init__(self, *args):
 
-        self.file = open('program.txt', 'r')
-        self.slices = args[0]
+        self.file = open(args[0], 'r')
+        self.slices = args[1]
         self.res_batch = []
 
         self.slices: List[Slice]

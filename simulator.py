@@ -5,12 +5,12 @@ import logging
 
 
 class Simulator():
-    def __init__(self):
+    def __init__(self, file_path):
         self.env = simpy.Environment()
         self.slices = [Slice(self.env, i) for i in range(16)]
         self.cpu = CPU(self.env)
 
-        self.program = CpuIterator(self.slices)
+        self.program = CpuIterator(file_path, self.slices)
 
     def run(self, simtime=100):
         self.env.run(until=simtime)
@@ -24,6 +24,6 @@ class Simulator():
 
 if __name__ == '__main__':
     logging.basicConfig(level=0, format='%(message)s')
-    sim = Simulator()
+    sim = Simulator('program.txt')
     sim.init()
     sim.run()

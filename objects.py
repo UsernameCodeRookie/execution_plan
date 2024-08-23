@@ -138,8 +138,3 @@ class CPU():
 
             for instr in program:
                 self.env.process(instr)
-
-
-class TMA():
-    def __init__(self, env: simpy.Environment):
-        self.env = env
