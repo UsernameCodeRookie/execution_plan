@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ASSIGN CLAIM_BAR COMMA DIVIDE DOT IDENTIFIER LBRACKET LOAD LPAREN MINUS MULTICAST NUMBER PLUS RBRACKET RPAREN SLICE SPM_ALOCATE STORE TIMES TMAstatement : statement statementstatement : instructionexpression : termexpression : expression PLUS termexpression : expression MINUS termterm : factorterm : term TIMES factorterm : term DIVIDE factorfactor : NUMBERfactor : IDENTIFIERfactor : LPAREN expression RPARENempty :assignment : IDENTIFIER LBRACKET assignment RBRACKETlist : LBRACKET bare_list RBRACKETbare_list : expressionbare_list : bare_list COMMA expressionexpression : listassignment : assignment COMMA assignmentassignment : emptyassignment : NUMBERassignment : IDENTIFIERassignment : IDENTIFIER ASSIGN expressionslice_predicate : SLICE DOT NUMBER DOTinstruction : slice_predicate CLAIM_BAR LPAREN assignment RPARENinstruction : slice_predicate SPM_ALOCATE LPAREN assignment RPARENtma_predicate : TMA DOTslice_suffix : DOT SLICE DOT NUMBERinstruction : tma_predicate LOAD slice_suffix LPAREN assignment RPARENinstruction : tma_predicate LOAD DOT MULTICAST LPAREN assignment RPARENinstruction : tma_predicate STORE slice_suffix LPAREN assignment RPARENinstruction : tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN'
+_lr_signature = 'ASSIGN CLAIM_BAR COMMA DIVIDE DOT IDENTIFIER LBRACKET LOAD LPAREN MINUS MULTICAST NUMBER PLUS RBRACKET RPAREN SLICE SPM_ALOCATE STORE TIMES TMAstatement : statement statementstatement : instructionexpression : termexpression : expression PLUS termexpression : expression MINUS termterm : factorterm : term TIMES factorterm : term DIVIDE factorfactor : NUMBERfactor : IDENTIFIERfactor : LPAREN expression RPARENempty :assignment : IDENTIFIER LBRACKET assignment RBRACKETlist : LBRACKET bare_list RBRACKETbare_list : expressionbare_list : bare_list COMMA expressionexpression : listassignment : assignment COMMA assignmentassignment : emptyassignment : NUMBERassignment : listassignment : IDENTIFIERassignment : IDENTIFIER ASSIGN expressionslice_predicate : SLICE DOT NUMBER DOTinstruction : slice_predicate CLAIM_BAR LPAREN assignment RPARENinstruction : slice_predicate SPM_ALOCATE LPAREN assignment RPARENtma_predicate : TMA DOTslice_suffix : DOT SLICE DOT NUMBERinstruction : tma_predicate LOAD slice_suffix LPAREN assignment RPARENinstruction : tma_predicate LOAD DOT MULTICAST LPAREN assignment RPARENinstruction : tma_predicate STORE slice_suffix LPAREN assignment RPARENinstruction : tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN'
     
-_lr_action_items = {'SLICE':([0,1,2,7,17,19,32,36,52,55,65,66,],[5,5,-2,5,28,28,-24,-25,-28,-30,-29,-31,]),'TMA':([0,1,2,7,32,36,52,55,65,66,],[6,6,-2,6,-24,-25,-28,-30,-29,-31,]),'$end':([1,2,7,32,36,52,55,65,66,],[0,-2,-1,-24,-25,-28,-30,-29,-31,]),'CLAIM_BAR':([3,31,],[8,-23,]),'SPM_ALOCATE':([3,31,],[9,-23,]),'LOAD':([4,13,],[10,-26,]),'STORE':([4,13,],[11,-26,]),'DOT':([5,6,10,11,20,28,],[12,13,17,19,31,39,]),'LPAREN':([8,9,16,18,27,30,35,49,51,54,58,59,60,61,72,],[14,15,26,29,38,41,51,51,51,-27,51,51,51,51,51,]),'NUMBER':([12,14,15,26,29,33,34,35,38,39,41,49,51,58,59,60,61,72,],[20,24,24,24,24,24,24,50,24,54,24,50,50,50,50,50,50,50,]),'IDENTIFIER':([14,15,26,29,33,34,35,38,41,49,51,58,59,60,61,72,],[22,22,22,22,22,22,44,22,22,44,44,44,44,44,44,44,]),'RPAREN':([14,15,21,22,23,24,25,26,29,33,37,38,40,41,42,44,45,46,47,48,50,53,56,57,64,67,68,69,70,71,73,],[-12,-12,32,-21,-19,-20,36,-12,-12,-12,52,-12,55,-12,-18,-10,-22,-3,-17,-6,-9,65,66,-13,73,-4,-5,-7,-8,-14,-11,]),'COMMA':([14,15,21,22,23,24,25,26,29,33,34,37,38,40,41,42,43,44,45,46,47,48,50,53,56,57,62,63,67,68,69,70,71,73,74,],[-12,-12,33,-21,-19,-20,33,-12,-12,-12,-12,33,-12,33,-12,33,33,-10,-22,-3,-17,-6,-9,33,33,-13,72,-15,-4,-5,-7,-8,-14,-11,-16,]),'MULTICAST':([17,19,],[27,30,]),'LBRACKET':([22,35,49,51,72,],[34,49,49,49,49,]),'RBRACKET':([22,23,24,33,34,42,43,44,45,46,47,48,50,57,62,63,67,68,69,70,71,73,74,],[-21,-19,-20,-12,-12,-18,57,-10,-22,-3,-17,-6,-9,-13,71,-15,-4,-5,-7,-8,-14,-11,-16,]),'ASSIGN':([22,],[35,]),'TIMES':([44,46,48,50,67,68,69,70,73,],[-10,60,-6,-9,60,60,-7,-8,-11,]),'DIVIDE':([44,46,48,50,67,68,69,70,73,],[-10,61,-6,-9,61,61,-7,-8,-11,]),'PLUS':([44,45,46,47,48,50,63,64,67,68,69,70,71,73,74,],[-10,58,-3,-17,-6,-9,58,58,-4,-5,-7,-8,-14,-11,58,]),'MINUS':([44,45,46,47,48,50,63,64,67,68,69,70,71,73,74,],[-10,59,-3,-17,-6,-9,59,59,-4,-5,-7,-8,-14,-11,59,]),}
+_lr_action_items = {'SLICE':([0,1,2,7,17,19,34,46,62,65,74,75,],[5,5,-2,5,30,30,-25,-26,-29,-31,-30,-32,]),'TMA':([0,1,2,7,34,46,62,65,74,75,],[6,6,-2,6,-25,-26,-29,-31,-30,-32,]),'$end':([1,2,7,34,46,62,65,74,75,],[0,-2,-1,-25,-26,-29,-31,-30,-32,]),'CLAIM_BAR':([3,33,],[8,-24,]),'SPM_ALOCATE':([3,33,],[9,-24,]),'LOAD':([4,13,],[10,-27,]),'STORE':([4,13,],[11,-27,]),'DOT':([5,6,10,11,20,30,],[12,13,17,19,33,49,]),'LPAREN':([8,9,16,18,23,29,32,37,45,56,57,58,59,60,64,],[14,15,28,31,45,48,51,45,45,45,45,45,45,45,-28,]),'NUMBER':([12,14,15,23,28,31,35,36,37,45,48,49,51,56,57,58,59,60,],[20,25,25,43,25,25,25,25,43,43,25,64,25,43,43,43,43,43,]),'IDENTIFIER':([14,15,23,28,31,35,36,37,45,48,51,56,57,58,59,60,],[22,22,44,22,22,22,22,44,44,22,22,44,44,44,44,44,]),'RPAREN':([14,15,21,22,24,25,26,27,28,31,35,40,41,42,43,44,47,48,50,51,52,54,55,61,63,66,67,69,70,71,72,73,],[-12,-12,34,-22,-19,-20,-21,46,-12,-12,-12,-3,-17,-6,-9,-10,62,-12,65,-12,-18,-23,-14,73,74,75,-13,-4,-5,-7,-8,-11,]),'COMMA':([14,15,21,22,24,25,26,27,28,31,35,36,38,39,40,41,42,43,44,47,48,50,51,52,53,54,55,63,66,67,68,69,70,71,72,73,],[-12,-12,35,-22,-19,-20,-21,35,-12,-12,-12,-12,56,-15,-3,-17,-6,-9,-10,35,-12,35,-12,35,35,-23,-14,35,35,-13,-16,-4,-5,-7,-8,-11,]),'LBRACKET':([14,15,22,23,28,31,35,36,37,45,48,51,56,],[23,23,36,23,23,23,23,23,23,23,23,23,23,]),'MULTICAST':([17,19,],[29,32,]),'RBRACKET':([22,24,25,26,35,36,38,39,40,41,42,43,44,52,53,54,55,67,68,69,70,71,72,73,],[-22,-19,-20,-21,-12,-12,55,-15,-3,-17,-6,-9,-10,-18,67,-23,-14,-13,-16,-4,-5,-7,-8,-11,]),'ASSIGN':([22,],[37,]),'PLUS':([39,40,41,42,43,44,54,55,61,68,69,70,71,72,73,],[57,-3,-17,-6,-9,-10,57,-14,57,57,-4,-5,-7,-8,-11,]),'MINUS':([39,40,41,42,43,44,54,55,61,68,69,70,71,72,73,],[58,-3,-17,-6,-9,-10,58,-14,58,58,-4,-5,-7,-8,-11,]),'TIMES':([40,42,43,44,69,70,71,72,73,],[59,-6,-9,-10,59,59,-7,-8,-11,]),'DIVIDE':([40,42,43,44,69,70,71,72,73,],[60,-6,-9,-10,60,60,-7,-8,-11,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'statement':([0,1,7,],[1,7,7,]),'instruction':([0,1,7,],[2,2,2,]),'slice_predicate':([0,1,7,],[3,3,3,]),'tma_predicate':([0,1,7,],[4,4,4,]),'slice_suffix':([10,11,],[16,18,]),'assignment':([14,15,26,29,33,34,38,41,],[21,25,37,40,42,43,53,56,]),'empty':([14,15,26,29,33,34,38,41,],[23,23,23,23,23,23,23,23,]),'expression':([35,49,51,72,],[45,63,64,74,]),'term':([35,49,51,58,59,72,],[46,46,46,67,68,46,]),'list':([35,49,51,72,],[47,47,47,47,]),'factor':([35,49,51,58,59,60,61,72,],[48,48,48,48,48,69,70,48,]),'bare_list':([49,],[62,]),}
+_lr_goto_items = {'statement':([0,1,7,],[1,7,7,]),'instruction':([0,1,7,],[2,2,2,]),'slice_predicate':([0,1,7,],[3,3,3,]),'tma_predicate':([0,1,7,],[4,4,4,]),'slice_suffix':([10,11,],[16,18,]),'assignment':([14,15,28,31,35,36,48,51,],[21,27,47,50,52,53,63,66,]),'empty':([14,15,28,31,35,36,48,51,],[24,24,24,24,24,24,24,24,]),'list':([14,15,23,28,31,35,36,37,45,48,51,56,],[26,26,41,26,26,26,26,41,41,26,26,41,]),'bare_list':([23,],[38,]),'expression':([23,37,45,56,],[39,54,61,68,]),'term':([23,37,45,56,57,58,],[40,40,40,40,69,70,]),'factor':([23,37,45,56,57,58,59,60,],[42,42,42,42,42,42,71,72,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,35 +27,36 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement","S'",1,None,None,None),
-  ('statement -> statement statement','statement',2,'p_statements','parser.py',7),
-  ('statement -> instruction','statement',1,'p_statement_instruction','parser.py',12),
-  ('expression -> term','expression',1,'p_expression_term','parser.py',17),
-  ('expression -> expression PLUS term','expression',3,'p_expression_plus','parser.py',22),
-  ('expression -> expression MINUS term','expression',3,'p_expression_minus','parser.py',27),
-  ('term -> factor','term',1,'p_term_factor','parser.py',32),
-  ('term -> term TIMES factor','term',3,'p_term_times','parser.py',37),
-  ('term -> term DIVIDE factor','term',3,'p_term_div','parser.py',42),
-  ('factor -> NUMBER','factor',1,'p_factor_num','parser.py',47),
-  ('factor -> IDENTIFIER','factor',1,'p_factor_identifier','parser.py',52),
-  ('factor -> LPAREN expression RPAREN','factor',3,'p_factor_expr','parser.py',57),
-  ('empty -> <empty>','empty',0,'p_empty','parser.py',66),
-  ('assignment -> IDENTIFIER LBRACKET assignment RBRACKET','assignment',4,'p_assignment_bracket','parser.py',71),
-  ('list -> LBRACKET bare_list RBRACKET','list',3,'p_list_bracket','parser.py',78),
-  ('bare_list -> expression','bare_list',1,'p_bare_list_expression','parser.py',83),
-  ('bare_list -> bare_list COMMA expression','bare_list',3,'p_bare_list_expression_comma','parser.py',88),
-  ('expression -> list','expression',1,'p_expression_list','parser.py',93),
-  ('assignment -> assignment COMMA assignment','assignment',3,'p_assignment_comma','parser.py',100),
-  ('assignment -> empty','assignment',1,'p_assignment_empty','parser.py',105),
-  ('assignment -> NUMBER','assignment',1,'p_assignment_number','parser.py',110),
-  ('assignment -> IDENTIFIER','assignment',1,'p_assignment_identifier','parser.py',115),
-  ('assignment -> IDENTIFIER ASSIGN expression','assignment',3,'p_assignment','parser.py',120),
-  ('slice_predicate -> SLICE DOT NUMBER DOT','slice_predicate',4,'p_slice_predicate_slice_number','parser.py',125),
-  ('instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN','instruction',5,'p_instruction_slice_claim_bar','parser.py',131),
-  ('instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN','instruction',5,'p_instruction_slice_spm_alocate','parser.py',137),
-  ('tma_predicate -> TMA DOT','tma_predicate',2,'p_tma_predicate','parser.py',143),
-  ('slice_suffix -> DOT SLICE DOT NUMBER','slice_suffix',4,'p_slice_suffix_slice_number','parser.py',147),
-  ('instruction -> tma_predicate LOAD slice_suffix LPAREN assignment RPAREN','instruction',6,'p_instruction_tma_load_slice','parser.py',153),
-  ('instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN','instruction',7,'p_instruction_tma_load_multicast','parser.py',159),
-  ('instruction -> tma_predicate STORE slice_suffix LPAREN assignment RPAREN','instruction',6,'p_instruction_tma_store_slice','parser.py',164),
-  ('instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN','instruction',7,'p_instruction_tma_store_multicast','parser.py',170),
+  ('statement -> statement statement','statement',2,'p_statements','parser.py',8),
+  ('statement -> instruction','statement',1,'p_statement_instruction','parser.py',13),
+  ('expression -> term','expression',1,'p_expression_term','parser.py',18),
+  ('expression -> expression PLUS term','expression',3,'p_expression_plus','parser.py',23),
+  ('expression -> expression MINUS term','expression',3,'p_expression_minus','parser.py',28),
+  ('term -> factor','term',1,'p_term_factor','parser.py',33),
+  ('term -> term TIMES factor','term',3,'p_term_times','parser.py',38),
+  ('term -> term DIVIDE factor','term',3,'p_term_div','parser.py',43),
+  ('factor -> NUMBER','factor',1,'p_factor_num','parser.py',48),
+  ('factor -> IDENTIFIER','factor',1,'p_factor_identifier','parser.py',53),
+  ('factor -> LPAREN expression RPAREN','factor',3,'p_factor_expr','parser.py',58),
+  ('empty -> <empty>','empty',0,'p_empty','parser.py',67),
+  ('assignment -> IDENTIFIER LBRACKET assignment RBRACKET','assignment',4,'p_assignment_bracket','parser.py',72),
+  ('list -> LBRACKET bare_list RBRACKET','list',3,'p_list_bracket','parser.py',79),
+  ('bare_list -> expression','bare_list',1,'p_bare_list_expression','parser.py',84),
+  ('bare_list -> bare_list COMMA expression','bare_list',3,'p_bare_list_expression_comma','parser.py',89),
+  ('expression -> list','expression',1,'p_expression_list','parser.py',94),
+  ('assignment -> assignment COMMA assignment','assignment',3,'p_assignment_comma','parser.py',101),
+  ('assignment -> empty','assignment',1,'p_assignment_empty','parser.py',106),
+  ('assignment -> NUMBER','assignment',1,'p_assignment_number','parser.py',111),
+  ('assignment -> list','assignment',1,'p_assignment_list','parser.py',116),
+  ('assignment -> IDENTIFIER','assignment',1,'p_assignment_identifier','parser.py',121),
+  ('assignment -> IDENTIFIER ASSIGN expression','assignment',3,'p_assignment','parser.py',126),
+  ('slice_predicate -> SLICE DOT NUMBER DOT','slice_predicate',4,'p_slice_predicate_slice_number','parser.py',131),
+  ('instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN','instruction',5,'p_instruction_slice_claim_bar','parser.py',137),
+  ('instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN','instruction',5,'p_instruction_slice_spm_alocate','parser.py',143),
+  ('tma_predicate -> TMA DOT','tma_predicate',2,'p_tma_predicate','parser.py',149),
+  ('slice_suffix -> DOT SLICE DOT NUMBER','slice_suffix',4,'p_slice_suffix_slice_number','parser.py',153),
+  ('instruction -> tma_predicate LOAD slice_suffix LPAREN assignment RPAREN','instruction',6,'p_instruction_tma_load_slice','parser.py',159),
+  ('instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN','instruction',7,'p_instruction_tma_load_multicast','parser.py',165),
+  ('instruction -> tma_predicate STORE slice_suffix LPAREN assignment RPAREN','instruction',6,'p_instruction_tma_store_slice','parser.py',171),
+  ('instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN','instruction',7,'p_instruction_tma_store_multicast','parser.py',177),
 ]

@@ -13,9 +13,8 @@ class Slice():
         self.index = index
 
     class Barrier():
-        def __init__(self, env, rows, cols, dtype):
-            self.rows = rows
-            self.cols = cols
+        def __init__(self, env, shape, dtype):
+            self.shape = shape
             self.dtype = dtype
             self.res = simpy.Resource(env)
 
@@ -35,10 +34,10 @@ class Slice():
         self.spm.allocate(*args)
         yield self.env.timeout(0)
 
-    def claim_barrier(self, barrier_id, rows, cols, dtype):
+    def claim_barrier(self, barrier_id, shape, dtype):
         logging.log(16, f'[{self.env.now}]Simulator: Slice {
             self.index} claim_barrier {barrier_id}')
-        self.barriers[barrier_id] = self.Barrier(self.env, rows, cols, dtype)
+        self.barriers[barrier_id] = self.Barrier(self.env, shape, dtype)
         yield self.env.timeout(0)
 
     # def load_set_barrier(self, allocate_id, barrier_id, array):
@@ -98,8 +97,8 @@ class ScratchPadMemory():
         self.env = env
         self.memory = {}
 
-    def allocate(self, id, rows, cols, dtype):
-        array = np.zeros((rows, cols), dtype=dtype)
+    def allocate(self, id, shape, dtype):
+        array = np.zeros(shape, dtype=dtype)
         self.memory[id] = array
 
     def read(self, id, array):

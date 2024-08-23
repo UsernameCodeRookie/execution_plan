@@ -58,20 +58,20 @@ class CpuIterator():
 
         match instr:
             case 'spm_allocate':
-                slice_idx, id, rows, cols, dtype = args
+                slice_idx, id, shape, dtype = args
                 logging.log(8, f'Program: SPM {slice_idx} allocate {
-                    id} with shape {rows}x{cols} of type {dtype}')
-                self.slices[slice_idx].spm_allocate(id, rows, cols, dtype)
+                    id} with shape {shape} of type {dtype}')
+                self.slices[slice_idx].spm_allocate(id, shape, dtype)
                 func = self.slices[slice_idx].spm_allocate(
-                    id, rows, cols, dtype)
+                    id, shape, dtype)
                 program.append(func)
 
             case 'claim_barrier':
-                slice_idx, id, rows, cols, dtype = args
+                slice_idx, id, shape, dtype = args
                 logging.log(8, f'Program: Slice {slice_idx} claim Barrier {
-                    id} with shape {rows}x{cols} of type {dtype}')
+                    id} with shape {shape} of type {dtype}')
                 func = self.slices[slice_idx].claim_barrier(
-                    id, rows, cols, dtype)
+                    id, shape, dtype)
                 program.append(func)
 
             case 'tma_store_slice':

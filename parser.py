@@ -112,6 +112,11 @@ def p_assignment_number(p):
     p[0] = [p[1]]
 
 
+def p_assignment_list(p):
+    'assignment : list'
+    p[0] = [p[1]]
+
+
 def p_assignment_identifier(p):
     'assignment : IDENTIFIER'
     p[0] = [p[1]]
@@ -180,3 +185,4 @@ if __name__ == '__main__':
 
     program = open('program.txt').read()
     res = parser.parse(program)
+    print(res)
