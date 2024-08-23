@@ -77,15 +77,19 @@ class Slice():
             yield self.env.timeout(1)
         yield self.env.process(self.spm.read(allocate_id, array))
 
-    def gemm(self, q, k, o, wait_barrier_id, set_barrier_id):
-        while self.barriers[wait_barrier_id].has_request():
-            yield self.env.timeout(GEMM_TIME)
+    def gemm(self, q, k, o, wait_barrier_id_list, set_barrier_id_list):
+        while any([self.barriers[wait_barrier_id].has_request() for wait_barrier_id in wait_barrier_id_list]):
+            yield self.env.timeout(1)
 
-        with self.barriers[set_barrier_id].request() as req:
-            yield req
-            q_a, k_a, o_a = self.spm.get(q, k, o)
-            np.matmul(q_a, k_a, out=o_a)
-            yield self.env.timeout(GEMM_TIME)
+        for set_barrier_id in set_barrier_id_list:
+            yield self.barriers[set_barrier_id].request()
+
+        q_a, k_a, o_a = self.spm.get(q, k, o)
+        np.matmul(q_a, k_a, out=o_a)
+        yield self.env.timeout(GEMM_TIME)
+
+        for set_barrier_id in set_barrier_id_list:
+            yield self.barriers[set_barrier_id].release()
 
 
 SPM_READ_TIME = 10
@@ -127,13 +131,17 @@ class CPU():
     def __init__(self, env: simpy.Environment):
         self.env = env
 
-    def run_program(self, program_iterator):
+    def run(self, program_iterator):
         while True:
             yield self.env.timeout(CPU_CYCLE_TIME)
-            program = next(program_iterator)
+            self.env.process(self.run_program(program_iterator))
 
-            if program is None:
-                return
+    def run_program(self, program_iterator):
 
-            for instr in program:
-                self.env.process(instr)
+        program = next(program_iterator)
+
+        if program is None:
+            return
+
+        for instr in program:
+            yield self.env.process(instr)

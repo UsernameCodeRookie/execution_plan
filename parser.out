@@ -13,10 +13,10 @@ Rule 7     term -> term TIMES factor
 Rule 8     term -> term DIVIDE factor
 Rule 9     factor -> NUMBER
 Rule 10    factor -> IDENTIFIER
-Rule 11    factor -> LPAREN expression RPAREN
+Rule 11    factor -> LRB expression RRB
 Rule 12    empty -> <empty>
-Rule 13    assignment -> IDENTIFIER LBRACKET assignment RBRACKET
-Rule 14    list -> LBRACKET bare_list RBRACKET
+Rule 13    assignment -> IDENTIFIER LSB assignment RSB
+Rule 14    list -> LSB bare_list RSB
 Rule 15    bare_list -> expression
 Rule 16    bare_list -> bare_list COMMA expression
 Rule 17    expression -> list
@@ -27,32 +27,42 @@ Rule 21    assignment -> list
 Rule 22    assignment -> IDENTIFIER
 Rule 23    assignment -> IDENTIFIER ASSIGN expression
 Rule 24    slice_predicate -> SLICE DOT NUMBER DOT
-Rule 25    instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN
-Rule 26    instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN
+Rule 25    instruction -> slice_predicate CLAIM_BAR LRB assignment RRB
+Rule 26    instruction -> slice_predicate SPM_ALOCATE LRB assignment RRB
 Rule 27    tma_predicate -> TMA DOT
 Rule 28    slice_suffix -> DOT SLICE DOT NUMBER
-Rule 29    instruction -> tma_predicate LOAD slice_suffix LPAREN assignment RPAREN
-Rule 30    instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN
-Rule 31    instruction -> tma_predicate STORE slice_suffix LPAREN assignment RPAREN
-Rule 32    instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN
+Rule 29    instruction -> tma_predicate LOAD slice_suffix LRB assignment RRB
+Rule 30    instruction -> tma_predicate LOAD DOT MULTICAST LRB assignment RRB
+Rule 31    instruction -> tma_predicate STORE slice_suffix LRB assignment RRB
+Rule 32    instruction -> tma_predicate STORE DOT MULTICAST LRB assignment RRB
+Rule 33    template_suffix -> DOUBLE_COLON LAB assignment RAB
+Rule 34    template_suffix -> DOUBLE_COLON LAB NUMBER D RAB
+Rule 35    instruction -> MAKE_TENSOR template_suffix LRB assignment RRB
+Rule 36    instruction -> slice_predicate GEMM template_suffix LRB assignment RRB
 
 Terminals, with rules where they appear
 
 ASSIGN               : 23
 CLAIM_BAR            : 25
 COMMA                : 16 18
+D                    : 34
 DIVIDE               : 8
 DOT                  : 24 24 27 28 28 30 32
+DOUBLE_COLON         : 33 34
+GEMM                 : 36
 IDENTIFIER           : 10 13 22 23
-LBRACKET             : 13 14
+LAB                  : 33 34
 LOAD                 : 29 30
-LPAREN               : 11 25 26 29 30 31 32
+LRB                  : 11 25 26 29 30 31 32 35 36
+LSB                  : 13 14
+MAKE_TENSOR          : 35
 MINUS                : 5
 MULTICAST            : 30 32
-NUMBER               : 9 20 24 28
+NUMBER               : 9 20 24 28 34
 PLUS                 : 4
-RBRACKET             : 13 14
-RPAREN               : 11 25 26 29 30 31 32
+RAB                  : 33 34
+RRB                  : 11 25 26 29 30 31 32 35 36
+RSB                  : 13 14
 SLICE                : 24 28
 SPM_ALOCATE          : 26
 STORE                : 31 32
@@ -62,16 +72,17 @@ error                :
 
 Nonterminals, with rules where they appear
 
-assignment           : 13 18 18 25 26 29 30 31 32
+assignment           : 13 18 18 25 26 29 30 31 32 33 35 36
 bare_list            : 14 16
 empty                : 19
 expression           : 4 5 11 15 16 23
 factor               : 6 7 8
 instruction          : 2
 list                 : 17 21
-slice_predicate      : 25 26
+slice_predicate      : 25 26 36
 slice_suffix         : 29 31
 statement            : 1 1 0
+template_suffix      : 35 36
 term                 : 3 4 5 7 8
 tma_predicate        : 29 30 31 32
 
@@ -82,17 +93,20 @@ state 0
     (0) S' -> . statement
     (1) statement -> . statement statement
     (2) statement -> . instruction
-    (25) instruction -> . slice_predicate CLAIM_BAR LPAREN assignment RPAREN
-    (26) instruction -> . slice_predicate SPM_ALOCATE LPAREN assignment RPAREN
-    (29) instruction -> . tma_predicate LOAD slice_suffix LPAREN assignment RPAREN
-    (30) instruction -> . tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN
-    (31) instruction -> . tma_predicate STORE slice_suffix LPAREN assignment RPAREN
-    (32) instruction -> . tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN
+    (25) instruction -> . slice_predicate CLAIM_BAR LRB assignment RRB
+    (26) instruction -> . slice_predicate SPM_ALOCATE LRB assignment RRB
+    (29) instruction -> . tma_predicate LOAD slice_suffix LRB assignment RRB
+    (30) instruction -> . tma_predicate LOAD DOT MULTICAST LRB assignment RRB
+    (31) instruction -> . tma_predicate STORE slice_suffix LRB assignment RRB
+    (32) instruction -> . tma_predicate STORE DOT MULTICAST LRB assignment RRB
+    (35) instruction -> . MAKE_TENSOR template_suffix LRB assignment RRB
+    (36) instruction -> . slice_predicate GEMM template_suffix LRB assignment RRB
     (24) slice_predicate -> . SLICE DOT NUMBER DOT
     (27) tma_predicate -> . TMA DOT
 
-    SLICE           shift and go to state 5
-    TMA             shift and go to state 6
+    MAKE_TENSOR     shift and go to state 5
+    SLICE           shift and go to state 6
+    TMA             shift and go to state 7
 
     statement                      shift and go to state 1
     instruction                    shift and go to state 2
@@ -105,19 +119,22 @@ state 1
     (1) statement -> statement . statement
     (1) statement -> . statement statement
     (2) statement -> . instruction
-    (25) instruction -> . slice_predicate CLAIM_BAR LPAREN assignment RPAREN
-    (26) instruction -> . slice_predicate SPM_ALOCATE LPAREN assignment RPAREN
-    (29) instruction -> . tma_predicate LOAD slice_suffix LPAREN assignment RPAREN
-    (30) instruction -> . tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN
-    (31) instruction -> . tma_predicate STORE slice_suffix LPAREN assignment RPAREN
-    (32) instruction -> . tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN
+    (25) instruction -> . slice_predicate CLAIM_BAR LRB assignment RRB
+    (26) instruction -> . slice_predicate SPM_ALOCATE LRB assignment RRB
+    (29) instruction -> . tma_predicate LOAD slice_suffix LRB assignment RRB
+    (30) instruction -> . tma_predicate LOAD DOT MULTICAST LRB assignment RRB
+    (31) instruction -> . tma_predicate STORE slice_suffix LRB assignment RRB
+    (32) instruction -> . tma_predicate STORE DOT MULTICAST LRB assignment RRB
+    (35) instruction -> . MAKE_TENSOR template_suffix LRB assignment RRB
+    (36) instruction -> . slice_predicate GEMM template_suffix LRB assignment RRB
     (24) slice_predicate -> . SLICE DOT NUMBER DOT
     (27) tma_predicate -> . TMA DOT
 
-    SLICE           shift and go to state 5
-    TMA             shift and go to state 6
+    MAKE_TENSOR     shift and go to state 5
+    SLICE           shift and go to state 6
+    TMA             shift and go to state 7
 
-    statement                      shift and go to state 7
+    statement                      shift and go to state 8
     instruction                    shift and go to state 2
     slice_predicate                shift and go to state 3
     tma_predicate                  shift and go to state 4
@@ -126,6 +143,7 @@ state 2
 
     (2) statement -> instruction .
 
+    MAKE_TENSOR     reduce using rule 2 (statement -> instruction .)
     SLICE           reduce using rule 2 (statement -> instruction .)
     TMA             reduce using rule 2 (statement -> instruction .)
     $end            reduce using rule 2 (statement -> instruction .)
@@ -133,109 +151,151 @@ state 2
 
 state 3
 
-    (25) instruction -> slice_predicate . CLAIM_BAR LPAREN assignment RPAREN
-    (26) instruction -> slice_predicate . SPM_ALOCATE LPAREN assignment RPAREN
+    (25) instruction -> slice_predicate . CLAIM_BAR LRB assignment RRB
+    (26) instruction -> slice_predicate . SPM_ALOCATE LRB assignment RRB
+    (36) instruction -> slice_predicate . GEMM template_suffix LRB assignment RRB
 
-    CLAIM_BAR       shift and go to state 8
-    SPM_ALOCATE     shift and go to state 9
+    CLAIM_BAR       shift and go to state 9
+    SPM_ALOCATE     shift and go to state 10
+    GEMM            shift and go to state 11
 
 
 state 4
 
-    (29) instruction -> tma_predicate . LOAD slice_suffix LPAREN assignment RPAREN
-    (30) instruction -> tma_predicate . LOAD DOT MULTICAST LPAREN assignment RPAREN
-    (31) instruction -> tma_predicate . STORE slice_suffix LPAREN assignment RPAREN
-    (32) instruction -> tma_predicate . STORE DOT MULTICAST LPAREN assignment RPAREN
+    (29) instruction -> tma_predicate . LOAD slice_suffix LRB assignment RRB
+    (30) instruction -> tma_predicate . LOAD DOT MULTICAST LRB assignment RRB
+    (31) instruction -> tma_predicate . STORE slice_suffix LRB assignment RRB
+    (32) instruction -> tma_predicate . STORE DOT MULTICAST LRB assignment RRB
 
-    LOAD            shift and go to state 10
-    STORE           shift and go to state 11
+    LOAD            shift and go to state 12
+    STORE           shift and go to state 13
 
 
 state 5
 
-    (24) slice_predicate -> SLICE . DOT NUMBER DOT
+    (35) instruction -> MAKE_TENSOR . template_suffix LRB assignment RRB
+    (33) template_suffix -> . DOUBLE_COLON LAB assignment RAB
+    (34) template_suffix -> . DOUBLE_COLON LAB NUMBER D RAB
 
-    DOT             shift and go to state 12
+    DOUBLE_COLON    shift and go to state 15
 
+    template_suffix                shift and go to state 14
 
 state 6
 
-    (27) tma_predicate -> TMA . DOT
+    (24) slice_predicate -> SLICE . DOT NUMBER DOT
 
-    DOT             shift and go to state 13
+    DOT             shift and go to state 16
 
 
 state 7
+
+    (27) tma_predicate -> TMA . DOT
+
+    DOT             shift and go to state 17
+
+
+state 8
 
     (1) statement -> statement statement .
     (1) statement -> statement . statement
     (1) statement -> . statement statement
     (2) statement -> . instruction
-    (25) instruction -> . slice_predicate CLAIM_BAR LPAREN assignment RPAREN
-    (26) instruction -> . slice_predicate SPM_ALOCATE LPAREN assignment RPAREN
-    (29) instruction -> . tma_predicate LOAD slice_suffix LPAREN assignment RPAREN
-    (30) instruction -> . tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN
-    (31) instruction -> . tma_predicate STORE slice_suffix LPAREN assignment RPAREN
-    (32) instruction -> . tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN
+    (25) instruction -> . slice_predicate CLAIM_BAR LRB assignment RRB
+    (26) instruction -> . slice_predicate SPM_ALOCATE LRB assignment RRB
+    (29) instruction -> . tma_predicate LOAD slice_suffix LRB assignment RRB
+    (30) instruction -> . tma_predicate LOAD DOT MULTICAST LRB assignment RRB
+    (31) instruction -> . tma_predicate STORE slice_suffix LRB assignment RRB
+    (32) instruction -> . tma_predicate STORE DOT MULTICAST LRB assignment RRB
+    (35) instruction -> . MAKE_TENSOR template_suffix LRB assignment RRB
+    (36) instruction -> . slice_predicate GEMM template_suffix LRB assignment RRB
     (24) slice_predicate -> . SLICE DOT NUMBER DOT
     (27) tma_predicate -> . TMA DOT
 
+  ! shift/reduce conflict for MAKE_TENSOR resolved as shift
   ! shift/reduce conflict for SLICE resolved as shift
   ! shift/reduce conflict for TMA resolved as shift
     $end            reduce using rule 1 (statement -> statement statement .)
-    SLICE           shift and go to state 5
-    TMA             shift and go to state 6
+    MAKE_TENSOR     shift and go to state 5
+    SLICE           shift and go to state 6
+    TMA             shift and go to state 7
 
+  ! MAKE_TENSOR     [ reduce using rule 1 (statement -> statement statement .) ]
   ! SLICE           [ reduce using rule 1 (statement -> statement statement .) ]
   ! TMA             [ reduce using rule 1 (statement -> statement statement .) ]
 
-    statement                      shift and go to state 7
+    statement                      shift and go to state 8
     instruction                    shift and go to state 2
     slice_predicate                shift and go to state 3
     tma_predicate                  shift and go to state 4
 
-state 8
-
-    (25) instruction -> slice_predicate CLAIM_BAR . LPAREN assignment RPAREN
-
-    LPAREN          shift and go to state 14
-
-
 state 9
 
-    (26) instruction -> slice_predicate SPM_ALOCATE . LPAREN assignment RPAREN
+    (25) instruction -> slice_predicate CLAIM_BAR . LRB assignment RRB
 
-    LPAREN          shift and go to state 15
+    LRB             shift and go to state 18
 
 
 state 10
 
-    (29) instruction -> tma_predicate LOAD . slice_suffix LPAREN assignment RPAREN
-    (30) instruction -> tma_predicate LOAD . DOT MULTICAST LPAREN assignment RPAREN
-    (28) slice_suffix -> . DOT SLICE DOT NUMBER
+    (26) instruction -> slice_predicate SPM_ALOCATE . LRB assignment RRB
 
-    DOT             shift and go to state 17
+    LRB             shift and go to state 19
 
-    slice_suffix                   shift and go to state 16
 
 state 11
 
-    (31) instruction -> tma_predicate STORE . slice_suffix LPAREN assignment RPAREN
-    (32) instruction -> tma_predicate STORE . DOT MULTICAST LPAREN assignment RPAREN
-    (28) slice_suffix -> . DOT SLICE DOT NUMBER
+    (36) instruction -> slice_predicate GEMM . template_suffix LRB assignment RRB
+    (33) template_suffix -> . DOUBLE_COLON LAB assignment RAB
+    (34) template_suffix -> . DOUBLE_COLON LAB NUMBER D RAB
 
-    DOT             shift and go to state 19
+    DOUBLE_COLON    shift and go to state 15
 
-    slice_suffix                   shift and go to state 18
+    template_suffix                shift and go to state 20
 
 state 12
 
-    (24) slice_predicate -> SLICE DOT . NUMBER DOT
+    (29) instruction -> tma_predicate LOAD . slice_suffix LRB assignment RRB
+    (30) instruction -> tma_predicate LOAD . DOT MULTICAST LRB assignment RRB
+    (28) slice_suffix -> . DOT SLICE DOT NUMBER
 
-    NUMBER          shift and go to state 20
+    DOT             shift and go to state 22
 
+    slice_suffix                   shift and go to state 21
 
 state 13
+
+    (31) instruction -> tma_predicate STORE . slice_suffix LRB assignment RRB
+    (32) instruction -> tma_predicate STORE . DOT MULTICAST LRB assignment RRB
+    (28) slice_suffix -> . DOT SLICE DOT NUMBER
+
+    DOT             shift and go to state 24
+
+    slice_suffix                   shift and go to state 23
+
+state 14
+
+    (35) instruction -> MAKE_TENSOR template_suffix . LRB assignment RRB
+
+    LRB             shift and go to state 25
+
+
+state 15
+
+    (33) template_suffix -> DOUBLE_COLON . LAB assignment RAB
+    (34) template_suffix -> DOUBLE_COLON . LAB NUMBER D RAB
+
+    LAB             shift and go to state 26
+
+
+state 16
+
+    (24) slice_predicate -> SLICE DOT . NUMBER DOT
+
+    NUMBER          shift and go to state 27
+
+
+state 17
 
     (27) tma_predicate -> TMA DOT .
 
@@ -243,116 +303,171 @@ state 13
     STORE           reduce using rule 27 (tma_predicate -> TMA DOT .)
 
 
-state 14
-
-    (25) instruction -> slice_predicate CLAIM_BAR LPAREN . assignment RPAREN
-    (13) assignment -> . IDENTIFIER LBRACKET assignment RBRACKET
-    (18) assignment -> . assignment COMMA assignment
-    (19) assignment -> . empty
-    (20) assignment -> . NUMBER
-    (21) assignment -> . list
-    (22) assignment -> . IDENTIFIER
-    (23) assignment -> . IDENTIFIER ASSIGN expression
-    (12) empty -> .
-    (14) list -> . LBRACKET bare_list RBRACKET
-
-    IDENTIFIER      shift and go to state 22
-    NUMBER          shift and go to state 25
-    RPAREN          reduce using rule 12 (empty -> .)
-    COMMA           reduce using rule 12 (empty -> .)
-    LBRACKET        shift and go to state 23
-
-    assignment                     shift and go to state 21
-    empty                          shift and go to state 24
-    list                           shift and go to state 26
-
-state 15
-
-    (26) instruction -> slice_predicate SPM_ALOCATE LPAREN . assignment RPAREN
-    (13) assignment -> . IDENTIFIER LBRACKET assignment RBRACKET
-    (18) assignment -> . assignment COMMA assignment
-    (19) assignment -> . empty
-    (20) assignment -> . NUMBER
-    (21) assignment -> . list
-    (22) assignment -> . IDENTIFIER
-    (23) assignment -> . IDENTIFIER ASSIGN expression
-    (12) empty -> .
-    (14) list -> . LBRACKET bare_list RBRACKET
-
-    IDENTIFIER      shift and go to state 22
-    NUMBER          shift and go to state 25
-    RPAREN          reduce using rule 12 (empty -> .)
-    COMMA           reduce using rule 12 (empty -> .)
-    LBRACKET        shift and go to state 23
-
-    assignment                     shift and go to state 27
-    empty                          shift and go to state 24
-    list                           shift and go to state 26
-
-state 16
-
-    (29) instruction -> tma_predicate LOAD slice_suffix . LPAREN assignment RPAREN
-
-    LPAREN          shift and go to state 28
-
-
-state 17
-
-    (30) instruction -> tma_predicate LOAD DOT . MULTICAST LPAREN assignment RPAREN
-    (28) slice_suffix -> DOT . SLICE DOT NUMBER
-
-    MULTICAST       shift and go to state 29
-    SLICE           shift and go to state 30
-
-
 state 18
 
-    (31) instruction -> tma_predicate STORE slice_suffix . LPAREN assignment RPAREN
+    (25) instruction -> slice_predicate CLAIM_BAR LRB . assignment RRB
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
+    (18) assignment -> . assignment COMMA assignment
+    (19) assignment -> . empty
+    (20) assignment -> . NUMBER
+    (21) assignment -> . list
+    (22) assignment -> . IDENTIFIER
+    (23) assignment -> . IDENTIFIER ASSIGN expression
+    (12) empty -> .
+    (14) list -> . LSB bare_list RSB
 
-    LPAREN          shift and go to state 31
+    IDENTIFIER      shift and go to state 29
+    NUMBER          shift and go to state 32
+    RRB             reduce using rule 12 (empty -> .)
+    COMMA           reduce using rule 12 (empty -> .)
+    LSB             shift and go to state 30
 
+    assignment                     shift and go to state 28
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
 
 state 19
 
-    (32) instruction -> tma_predicate STORE DOT . MULTICAST LPAREN assignment RPAREN
-    (28) slice_suffix -> DOT . SLICE DOT NUMBER
+    (26) instruction -> slice_predicate SPM_ALOCATE LRB . assignment RRB
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
+    (18) assignment -> . assignment COMMA assignment
+    (19) assignment -> . empty
+    (20) assignment -> . NUMBER
+    (21) assignment -> . list
+    (22) assignment -> . IDENTIFIER
+    (23) assignment -> . IDENTIFIER ASSIGN expression
+    (12) empty -> .
+    (14) list -> . LSB bare_list RSB
 
-    MULTICAST       shift and go to state 32
-    SLICE           shift and go to state 30
+    IDENTIFIER      shift and go to state 29
+    NUMBER          shift and go to state 32
+    RRB             reduce using rule 12 (empty -> .)
+    COMMA           reduce using rule 12 (empty -> .)
+    LSB             shift and go to state 30
 
+    assignment                     shift and go to state 34
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
 
 state 20
 
-    (24) slice_predicate -> SLICE DOT NUMBER . DOT
+    (36) instruction -> slice_predicate GEMM template_suffix . LRB assignment RRB
 
-    DOT             shift and go to state 33
+    LRB             shift and go to state 35
 
 
 state 21
 
-    (25) instruction -> slice_predicate CLAIM_BAR LPAREN assignment . RPAREN
-    (18) assignment -> assignment . COMMA assignment
+    (29) instruction -> tma_predicate LOAD slice_suffix . LRB assignment RRB
 
-    RPAREN          shift and go to state 34
-    COMMA           shift and go to state 35
+    LRB             shift and go to state 36
 
 
 state 22
 
-    (13) assignment -> IDENTIFIER . LBRACKET assignment RBRACKET
-    (22) assignment -> IDENTIFIER .
-    (23) assignment -> IDENTIFIER . ASSIGN expression
+    (30) instruction -> tma_predicate LOAD DOT . MULTICAST LRB assignment RRB
+    (28) slice_suffix -> DOT . SLICE DOT NUMBER
 
-    LBRACKET        shift and go to state 36
-    RPAREN          reduce using rule 22 (assignment -> IDENTIFIER .)
-    COMMA           reduce using rule 22 (assignment -> IDENTIFIER .)
-    RBRACKET        reduce using rule 22 (assignment -> IDENTIFIER .)
-    ASSIGN          shift and go to state 37
+    MULTICAST       shift and go to state 37
+    SLICE           shift and go to state 38
 
 
 state 23
 
-    (14) list -> LBRACKET . bare_list RBRACKET
+    (31) instruction -> tma_predicate STORE slice_suffix . LRB assignment RRB
+
+    LRB             shift and go to state 39
+
+
+state 24
+
+    (32) instruction -> tma_predicate STORE DOT . MULTICAST LRB assignment RRB
+    (28) slice_suffix -> DOT . SLICE DOT NUMBER
+
+    MULTICAST       shift and go to state 40
+    SLICE           shift and go to state 38
+
+
+state 25
+
+    (35) instruction -> MAKE_TENSOR template_suffix LRB . assignment RRB
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
+    (18) assignment -> . assignment COMMA assignment
+    (19) assignment -> . empty
+    (20) assignment -> . NUMBER
+    (21) assignment -> . list
+    (22) assignment -> . IDENTIFIER
+    (23) assignment -> . IDENTIFIER ASSIGN expression
+    (12) empty -> .
+    (14) list -> . LSB bare_list RSB
+
+    IDENTIFIER      shift and go to state 29
+    NUMBER          shift and go to state 32
+    RRB             reduce using rule 12 (empty -> .)
+    COMMA           reduce using rule 12 (empty -> .)
+    LSB             shift and go to state 30
+
+    assignment                     shift and go to state 41
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
+
+state 26
+
+    (33) template_suffix -> DOUBLE_COLON LAB . assignment RAB
+    (34) template_suffix -> DOUBLE_COLON LAB . NUMBER D RAB
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
+    (18) assignment -> . assignment COMMA assignment
+    (19) assignment -> . empty
+    (20) assignment -> . NUMBER
+    (21) assignment -> . list
+    (22) assignment -> . IDENTIFIER
+    (23) assignment -> . IDENTIFIER ASSIGN expression
+    (12) empty -> .
+    (14) list -> . LSB bare_list RSB
+
+    NUMBER          shift and go to state 43
+    IDENTIFIER      shift and go to state 29
+    RAB             reduce using rule 12 (empty -> .)
+    COMMA           reduce using rule 12 (empty -> .)
+    LSB             shift and go to state 30
+
+    assignment                     shift and go to state 42
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
+
+state 27
+
+    (24) slice_predicate -> SLICE DOT NUMBER . DOT
+
+    DOT             shift and go to state 44
+
+
+state 28
+
+    (25) instruction -> slice_predicate CLAIM_BAR LRB assignment . RRB
+    (18) assignment -> assignment . COMMA assignment
+
+    RRB             shift and go to state 45
+    COMMA           shift and go to state 46
+
+
+state 29
+
+    (13) assignment -> IDENTIFIER . LSB assignment RSB
+    (22) assignment -> IDENTIFIER .
+    (23) assignment -> IDENTIFIER . ASSIGN expression
+
+    LSB             shift and go to state 47
+    RRB             reduce using rule 22 (assignment -> IDENTIFIER .)
+    COMMA           reduce using rule 22 (assignment -> IDENTIFIER .)
+    RAB             reduce using rule 22 (assignment -> IDENTIFIER .)
+    RSB             reduce using rule 22 (assignment -> IDENTIFIER .)
+    ASSIGN          shift and go to state 48
+
+
+state 30
+
+    (14) list -> LSB . bare_list RSB
     (15) bare_list -> . expression
     (16) bare_list -> . bare_list COMMA expression
     (3) expression -> . term
@@ -362,99 +477,65 @@ state 23
     (6) term -> . factor
     (7) term -> . term TIMES factor
     (8) term -> . term DIVIDE factor
-    (14) list -> . LBRACKET bare_list RBRACKET
+    (14) list -> . LSB bare_list RSB
     (9) factor -> . NUMBER
     (10) factor -> . IDENTIFIER
-    (11) factor -> . LPAREN expression RPAREN
+    (11) factor -> . LRB expression RRB
 
-    LBRACKET        shift and go to state 23
-    NUMBER          shift and go to state 43
-    IDENTIFIER      shift and go to state 44
-    LPAREN          shift and go to state 45
+    LSB             shift and go to state 30
+    NUMBER          shift and go to state 54
+    IDENTIFIER      shift and go to state 55
+    LRB             shift and go to state 56
 
-    bare_list                      shift and go to state 38
-    expression                     shift and go to state 39
-    term                           shift and go to state 40
-    list                           shift and go to state 41
-    factor                         shift and go to state 42
-
-state 24
-
-    (19) assignment -> empty .
-
-    RPAREN          reduce using rule 19 (assignment -> empty .)
-    COMMA           reduce using rule 19 (assignment -> empty .)
-    RBRACKET        reduce using rule 19 (assignment -> empty .)
-
-
-state 25
-
-    (20) assignment -> NUMBER .
-
-    RPAREN          reduce using rule 20 (assignment -> NUMBER .)
-    COMMA           reduce using rule 20 (assignment -> NUMBER .)
-    RBRACKET        reduce using rule 20 (assignment -> NUMBER .)
-
-
-state 26
-
-    (21) assignment -> list .
-
-    RPAREN          reduce using rule 21 (assignment -> list .)
-    COMMA           reduce using rule 21 (assignment -> list .)
-    RBRACKET        reduce using rule 21 (assignment -> list .)
-
-
-state 27
-
-    (26) instruction -> slice_predicate SPM_ALOCATE LPAREN assignment . RPAREN
-    (18) assignment -> assignment . COMMA assignment
-
-    RPAREN          shift and go to state 46
-    COMMA           shift and go to state 35
-
-
-state 28
-
-    (29) instruction -> tma_predicate LOAD slice_suffix LPAREN . assignment RPAREN
-    (13) assignment -> . IDENTIFIER LBRACKET assignment RBRACKET
-    (18) assignment -> . assignment COMMA assignment
-    (19) assignment -> . empty
-    (20) assignment -> . NUMBER
-    (21) assignment -> . list
-    (22) assignment -> . IDENTIFIER
-    (23) assignment -> . IDENTIFIER ASSIGN expression
-    (12) empty -> .
-    (14) list -> . LBRACKET bare_list RBRACKET
-
-    IDENTIFIER      shift and go to state 22
-    NUMBER          shift and go to state 25
-    RPAREN          reduce using rule 12 (empty -> .)
-    COMMA           reduce using rule 12 (empty -> .)
-    LBRACKET        shift and go to state 23
-
-    assignment                     shift and go to state 47
-    empty                          shift and go to state 24
-    list                           shift and go to state 26
-
-state 29
-
-    (30) instruction -> tma_predicate LOAD DOT MULTICAST . LPAREN assignment RPAREN
-
-    LPAREN          shift and go to state 48
-
-
-state 30
-
-    (28) slice_suffix -> DOT SLICE . DOT NUMBER
-
-    DOT             shift and go to state 49
-
+    bare_list                      shift and go to state 49
+    expression                     shift and go to state 50
+    term                           shift and go to state 51
+    list                           shift and go to state 52
+    factor                         shift and go to state 53
 
 state 31
 
-    (31) instruction -> tma_predicate STORE slice_suffix LPAREN . assignment RPAREN
-    (13) assignment -> . IDENTIFIER LBRACKET assignment RBRACKET
+    (19) assignment -> empty .
+
+    RRB             reduce using rule 19 (assignment -> empty .)
+    COMMA           reduce using rule 19 (assignment -> empty .)
+    RAB             reduce using rule 19 (assignment -> empty .)
+    RSB             reduce using rule 19 (assignment -> empty .)
+
+
+state 32
+
+    (20) assignment -> NUMBER .
+
+    RRB             reduce using rule 20 (assignment -> NUMBER .)
+    COMMA           reduce using rule 20 (assignment -> NUMBER .)
+    RAB             reduce using rule 20 (assignment -> NUMBER .)
+    RSB             reduce using rule 20 (assignment -> NUMBER .)
+
+
+state 33
+
+    (21) assignment -> list .
+
+    RRB             reduce using rule 21 (assignment -> list .)
+    COMMA           reduce using rule 21 (assignment -> list .)
+    RAB             reduce using rule 21 (assignment -> list .)
+    RSB             reduce using rule 21 (assignment -> list .)
+
+
+state 34
+
+    (26) instruction -> slice_predicate SPM_ALOCATE LRB assignment . RRB
+    (18) assignment -> assignment . COMMA assignment
+
+    RRB             shift and go to state 57
+    COMMA           shift and go to state 46
+
+
+state 35
+
+    (36) instruction -> slice_predicate GEMM template_suffix LRB . assignment RRB
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
     (18) assignment -> . assignment COMMA assignment
     (19) assignment -> . empty
     (20) assignment -> . NUMBER
@@ -462,46 +543,136 @@ state 31
     (22) assignment -> . IDENTIFIER
     (23) assignment -> . IDENTIFIER ASSIGN expression
     (12) empty -> .
-    (14) list -> . LBRACKET bare_list RBRACKET
+    (14) list -> . LSB bare_list RSB
 
-    IDENTIFIER      shift and go to state 22
-    NUMBER          shift and go to state 25
-    RPAREN          reduce using rule 12 (empty -> .)
+    IDENTIFIER      shift and go to state 29
+    NUMBER          shift and go to state 32
+    RRB             reduce using rule 12 (empty -> .)
     COMMA           reduce using rule 12 (empty -> .)
-    LBRACKET        shift and go to state 23
+    LSB             shift and go to state 30
 
-    assignment                     shift and go to state 50
-    empty                          shift and go to state 24
-    list                           shift and go to state 26
+    assignment                     shift and go to state 58
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
 
-state 32
+state 36
 
-    (32) instruction -> tma_predicate STORE DOT MULTICAST . LPAREN assignment RPAREN
+    (29) instruction -> tma_predicate LOAD slice_suffix LRB . assignment RRB
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
+    (18) assignment -> . assignment COMMA assignment
+    (19) assignment -> . empty
+    (20) assignment -> . NUMBER
+    (21) assignment -> . list
+    (22) assignment -> . IDENTIFIER
+    (23) assignment -> . IDENTIFIER ASSIGN expression
+    (12) empty -> .
+    (14) list -> . LSB bare_list RSB
 
-    LPAREN          shift and go to state 51
+    IDENTIFIER      shift and go to state 29
+    NUMBER          shift and go to state 32
+    RRB             reduce using rule 12 (empty -> .)
+    COMMA           reduce using rule 12 (empty -> .)
+    LSB             shift and go to state 30
+
+    assignment                     shift and go to state 59
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
+
+state 37
+
+    (30) instruction -> tma_predicate LOAD DOT MULTICAST . LRB assignment RRB
+
+    LRB             shift and go to state 60
 
 
-state 33
+state 38
+
+    (28) slice_suffix -> DOT SLICE . DOT NUMBER
+
+    DOT             shift and go to state 61
+
+
+state 39
+
+    (31) instruction -> tma_predicate STORE slice_suffix LRB . assignment RRB
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
+    (18) assignment -> . assignment COMMA assignment
+    (19) assignment -> . empty
+    (20) assignment -> . NUMBER
+    (21) assignment -> . list
+    (22) assignment -> . IDENTIFIER
+    (23) assignment -> . IDENTIFIER ASSIGN expression
+    (12) empty -> .
+    (14) list -> . LSB bare_list RSB
+
+    IDENTIFIER      shift and go to state 29
+    NUMBER          shift and go to state 32
+    RRB             reduce using rule 12 (empty -> .)
+    COMMA           reduce using rule 12 (empty -> .)
+    LSB             shift and go to state 30
+
+    assignment                     shift and go to state 62
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
+
+state 40
+
+    (32) instruction -> tma_predicate STORE DOT MULTICAST . LRB assignment RRB
+
+    LRB             shift and go to state 63
+
+
+state 41
+
+    (35) instruction -> MAKE_TENSOR template_suffix LRB assignment . RRB
+    (18) assignment -> assignment . COMMA assignment
+
+    RRB             shift and go to state 64
+    COMMA           shift and go to state 46
+
+
+state 42
+
+    (33) template_suffix -> DOUBLE_COLON LAB assignment . RAB
+    (18) assignment -> assignment . COMMA assignment
+
+    RAB             shift and go to state 65
+    COMMA           shift and go to state 46
+
+
+state 43
+
+    (34) template_suffix -> DOUBLE_COLON LAB NUMBER . D RAB
+    (20) assignment -> NUMBER .
+
+    D               shift and go to state 66
+    RAB             reduce using rule 20 (assignment -> NUMBER .)
+    COMMA           reduce using rule 20 (assignment -> NUMBER .)
+
+
+state 44
 
     (24) slice_predicate -> SLICE DOT NUMBER DOT .
 
     CLAIM_BAR       reduce using rule 24 (slice_predicate -> SLICE DOT NUMBER DOT .)
     SPM_ALOCATE     reduce using rule 24 (slice_predicate -> SLICE DOT NUMBER DOT .)
+    GEMM            reduce using rule 24 (slice_predicate -> SLICE DOT NUMBER DOT .)
 
 
-state 34
+state 45
 
-    (25) instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN .
+    (25) instruction -> slice_predicate CLAIM_BAR LRB assignment RRB .
 
-    SLICE           reduce using rule 25 (instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN .)
-    TMA             reduce using rule 25 (instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN .)
-    $end            reduce using rule 25 (instruction -> slice_predicate CLAIM_BAR LPAREN assignment RPAREN .)
+    MAKE_TENSOR     reduce using rule 25 (instruction -> slice_predicate CLAIM_BAR LRB assignment RRB .)
+    SLICE           reduce using rule 25 (instruction -> slice_predicate CLAIM_BAR LRB assignment RRB .)
+    TMA             reduce using rule 25 (instruction -> slice_predicate CLAIM_BAR LRB assignment RRB .)
+    $end            reduce using rule 25 (instruction -> slice_predicate CLAIM_BAR LRB assignment RRB .)
 
 
-state 35
+state 46
 
     (18) assignment -> assignment COMMA . assignment
-    (13) assignment -> . IDENTIFIER LBRACKET assignment RBRACKET
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
     (18) assignment -> . assignment COMMA assignment
     (19) assignment -> . empty
     (20) assignment -> . NUMBER
@@ -509,23 +680,24 @@ state 35
     (22) assignment -> . IDENTIFIER
     (23) assignment -> . IDENTIFIER ASSIGN expression
     (12) empty -> .
-    (14) list -> . LBRACKET bare_list RBRACKET
+    (14) list -> . LSB bare_list RSB
 
-    IDENTIFIER      shift and go to state 22
-    NUMBER          shift and go to state 25
+    IDENTIFIER      shift and go to state 29
+    NUMBER          shift and go to state 32
     COMMA           reduce using rule 12 (empty -> .)
-    RPAREN          reduce using rule 12 (empty -> .)
-    RBRACKET        reduce using rule 12 (empty -> .)
-    LBRACKET        shift and go to state 23
+    RRB             reduce using rule 12 (empty -> .)
+    RAB             reduce using rule 12 (empty -> .)
+    RSB             reduce using rule 12 (empty -> .)
+    LSB             shift and go to state 30
 
-    assignment                     shift and go to state 52
-    empty                          shift and go to state 24
-    list                           shift and go to state 26
+    assignment                     shift and go to state 67
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
 
-state 36
+state 47
 
-    (13) assignment -> IDENTIFIER LBRACKET . assignment RBRACKET
-    (13) assignment -> . IDENTIFIER LBRACKET assignment RBRACKET
+    (13) assignment -> IDENTIFIER LSB . assignment RSB
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
     (18) assignment -> . assignment COMMA assignment
     (19) assignment -> . empty
     (20) assignment -> . NUMBER
@@ -533,19 +705,19 @@ state 36
     (22) assignment -> . IDENTIFIER
     (23) assignment -> . IDENTIFIER ASSIGN expression
     (12) empty -> .
-    (14) list -> . LBRACKET bare_list RBRACKET
+    (14) list -> . LSB bare_list RSB
 
-    IDENTIFIER      shift and go to state 22
-    NUMBER          shift and go to state 25
-    RBRACKET        reduce using rule 12 (empty -> .)
+    IDENTIFIER      shift and go to state 29
+    NUMBER          shift and go to state 32
+    RSB             reduce using rule 12 (empty -> .)
     COMMA           reduce using rule 12 (empty -> .)
-    LBRACKET        shift and go to state 23
+    LSB             shift and go to state 30
 
-    assignment                     shift and go to state 53
-    empty                          shift and go to state 24
-    list                           shift and go to state 26
+    assignment                     shift and go to state 68
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
 
-state 37
+state 48
 
     (23) assignment -> IDENTIFIER ASSIGN . expression
     (3) expression -> . term
@@ -555,43 +727,43 @@ state 37
     (6) term -> . factor
     (7) term -> . term TIMES factor
     (8) term -> . term DIVIDE factor
-    (14) list -> . LBRACKET bare_list RBRACKET
+    (14) list -> . LSB bare_list RSB
     (9) factor -> . NUMBER
     (10) factor -> . IDENTIFIER
-    (11) factor -> . LPAREN expression RPAREN
+    (11) factor -> . LRB expression RRB
 
-    LBRACKET        shift and go to state 23
-    NUMBER          shift and go to state 43
-    IDENTIFIER      shift and go to state 44
-    LPAREN          shift and go to state 45
+    LSB             shift and go to state 30
+    NUMBER          shift and go to state 54
+    IDENTIFIER      shift and go to state 55
+    LRB             shift and go to state 56
 
-    expression                     shift and go to state 54
-    term                           shift and go to state 40
-    list                           shift and go to state 41
-    factor                         shift and go to state 42
+    expression                     shift and go to state 69
+    term                           shift and go to state 51
+    list                           shift and go to state 52
+    factor                         shift and go to state 53
 
-state 38
+state 49
 
-    (14) list -> LBRACKET bare_list . RBRACKET
+    (14) list -> LSB bare_list . RSB
     (16) bare_list -> bare_list . COMMA expression
 
-    RBRACKET        shift and go to state 55
-    COMMA           shift and go to state 56
+    RSB             shift and go to state 70
+    COMMA           shift and go to state 71
 
 
-state 39
+state 50
 
     (15) bare_list -> expression .
     (4) expression -> expression . PLUS term
     (5) expression -> expression . MINUS term
 
-    RBRACKET        reduce using rule 15 (bare_list -> expression .)
+    RSB             reduce using rule 15 (bare_list -> expression .)
     COMMA           reduce using rule 15 (bare_list -> expression .)
-    PLUS            shift and go to state 57
-    MINUS           shift and go to state 58
+    PLUS            shift and go to state 72
+    MINUS           shift and go to state 73
 
 
-state 40
+state 51
 
     (3) expression -> term .
     (7) term -> term . TIMES factor
@@ -599,25 +771,27 @@ state 40
 
     PLUS            reduce using rule 3 (expression -> term .)
     MINUS           reduce using rule 3 (expression -> term .)
-    RBRACKET        reduce using rule 3 (expression -> term .)
+    RSB             reduce using rule 3 (expression -> term .)
     COMMA           reduce using rule 3 (expression -> term .)
-    RPAREN          reduce using rule 3 (expression -> term .)
-    TIMES           shift and go to state 59
-    DIVIDE          shift and go to state 60
+    RRB             reduce using rule 3 (expression -> term .)
+    RAB             reduce using rule 3 (expression -> term .)
+    TIMES           shift and go to state 74
+    DIVIDE          shift and go to state 75
 
 
-state 41
+state 52
 
     (17) expression -> list .
 
     PLUS            reduce using rule 17 (expression -> list .)
     MINUS           reduce using rule 17 (expression -> list .)
-    RBRACKET        reduce using rule 17 (expression -> list .)
+    RSB             reduce using rule 17 (expression -> list .)
     COMMA           reduce using rule 17 (expression -> list .)
-    RPAREN          reduce using rule 17 (expression -> list .)
+    RRB             reduce using rule 17 (expression -> list .)
+    RAB             reduce using rule 17 (expression -> list .)
 
 
-state 42
+state 53
 
     (6) term -> factor .
 
@@ -625,12 +799,13 @@ state 42
     DIVIDE          reduce using rule 6 (term -> factor .)
     PLUS            reduce using rule 6 (term -> factor .)
     MINUS           reduce using rule 6 (term -> factor .)
-    RBRACKET        reduce using rule 6 (term -> factor .)
+    RSB             reduce using rule 6 (term -> factor .)
     COMMA           reduce using rule 6 (term -> factor .)
-    RPAREN          reduce using rule 6 (term -> factor .)
+    RRB             reduce using rule 6 (term -> factor .)
+    RAB             reduce using rule 6 (term -> factor .)
 
 
-state 43
+state 54
 
     (9) factor -> NUMBER .
 
@@ -638,12 +813,13 @@ state 43
     DIVIDE          reduce using rule 9 (factor -> NUMBER .)
     PLUS            reduce using rule 9 (factor -> NUMBER .)
     MINUS           reduce using rule 9 (factor -> NUMBER .)
-    RBRACKET        reduce using rule 9 (factor -> NUMBER .)
+    RSB             reduce using rule 9 (factor -> NUMBER .)
     COMMA           reduce using rule 9 (factor -> NUMBER .)
-    RPAREN          reduce using rule 9 (factor -> NUMBER .)
+    RRB             reduce using rule 9 (factor -> NUMBER .)
+    RAB             reduce using rule 9 (factor -> NUMBER .)
 
 
-state 44
+state 55
 
     (10) factor -> IDENTIFIER .
 
@@ -651,14 +827,15 @@ state 44
     DIVIDE          reduce using rule 10 (factor -> IDENTIFIER .)
     PLUS            reduce using rule 10 (factor -> IDENTIFIER .)
     MINUS           reduce using rule 10 (factor -> IDENTIFIER .)
-    RBRACKET        reduce using rule 10 (factor -> IDENTIFIER .)
+    RSB             reduce using rule 10 (factor -> IDENTIFIER .)
     COMMA           reduce using rule 10 (factor -> IDENTIFIER .)
-    RPAREN          reduce using rule 10 (factor -> IDENTIFIER .)
+    RRB             reduce using rule 10 (factor -> IDENTIFIER .)
+    RAB             reduce using rule 10 (factor -> IDENTIFIER .)
 
 
-state 45
+state 56
 
-    (11) factor -> LPAREN . expression RPAREN
+    (11) factor -> LRB . expression RRB
     (3) expression -> . term
     (4) expression -> . expression PLUS term
     (5) expression -> . expression MINUS term
@@ -666,43 +843,53 @@ state 45
     (6) term -> . factor
     (7) term -> . term TIMES factor
     (8) term -> . term DIVIDE factor
-    (14) list -> . LBRACKET bare_list RBRACKET
+    (14) list -> . LSB bare_list RSB
     (9) factor -> . NUMBER
     (10) factor -> . IDENTIFIER
-    (11) factor -> . LPAREN expression RPAREN
+    (11) factor -> . LRB expression RRB
 
-    LBRACKET        shift and go to state 23
-    NUMBER          shift and go to state 43
-    IDENTIFIER      shift and go to state 44
-    LPAREN          shift and go to state 45
+    LSB             shift and go to state 30
+    NUMBER          shift and go to state 54
+    IDENTIFIER      shift and go to state 55
+    LRB             shift and go to state 56
 
-    expression                     shift and go to state 61
-    term                           shift and go to state 40
-    list                           shift and go to state 41
-    factor                         shift and go to state 42
+    expression                     shift and go to state 76
+    term                           shift and go to state 51
+    list                           shift and go to state 52
+    factor                         shift and go to state 53
 
-state 46
+state 57
 
-    (26) instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN .
+    (26) instruction -> slice_predicate SPM_ALOCATE LRB assignment RRB .
 
-    SLICE           reduce using rule 26 (instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN .)
-    TMA             reduce using rule 26 (instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN .)
-    $end            reduce using rule 26 (instruction -> slice_predicate SPM_ALOCATE LPAREN assignment RPAREN .)
+    MAKE_TENSOR     reduce using rule 26 (instruction -> slice_predicate SPM_ALOCATE LRB assignment RRB .)
+    SLICE           reduce using rule 26 (instruction -> slice_predicate SPM_ALOCATE LRB assignment RRB .)
+    TMA             reduce using rule 26 (instruction -> slice_predicate SPM_ALOCATE LRB assignment RRB .)
+    $end            reduce using rule 26 (instruction -> slice_predicate SPM_ALOCATE LRB assignment RRB .)
 
 
-state 47
+state 58
 
-    (29) instruction -> tma_predicate LOAD slice_suffix LPAREN assignment . RPAREN
+    (36) instruction -> slice_predicate GEMM template_suffix LRB assignment . RRB
     (18) assignment -> assignment . COMMA assignment
 
-    RPAREN          shift and go to state 62
-    COMMA           shift and go to state 35
+    RRB             shift and go to state 77
+    COMMA           shift and go to state 46
 
 
-state 48
+state 59
 
-    (30) instruction -> tma_predicate LOAD DOT MULTICAST LPAREN . assignment RPAREN
-    (13) assignment -> . IDENTIFIER LBRACKET assignment RBRACKET
+    (29) instruction -> tma_predicate LOAD slice_suffix LRB assignment . RRB
+    (18) assignment -> assignment . COMMA assignment
+
+    RRB             shift and go to state 78
+    COMMA           shift and go to state 46
+
+
+state 60
+
+    (30) instruction -> tma_predicate LOAD DOT MULTICAST LRB . assignment RRB
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
     (18) assignment -> . assignment COMMA assignment
     (19) assignment -> . empty
     (20) assignment -> . NUMBER
@@ -710,38 +897,38 @@ state 48
     (22) assignment -> . IDENTIFIER
     (23) assignment -> . IDENTIFIER ASSIGN expression
     (12) empty -> .
-    (14) list -> . LBRACKET bare_list RBRACKET
+    (14) list -> . LSB bare_list RSB
 
-    IDENTIFIER      shift and go to state 22
-    NUMBER          shift and go to state 25
-    RPAREN          reduce using rule 12 (empty -> .)
+    IDENTIFIER      shift and go to state 29
+    NUMBER          shift and go to state 32
+    RRB             reduce using rule 12 (empty -> .)
     COMMA           reduce using rule 12 (empty -> .)
-    LBRACKET        shift and go to state 23
+    LSB             shift and go to state 30
 
-    assignment                     shift and go to state 63
-    empty                          shift and go to state 24
-    list                           shift and go to state 26
+    assignment                     shift and go to state 79
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
 
-state 49
+state 61
 
     (28) slice_suffix -> DOT SLICE DOT . NUMBER
 
-    NUMBER          shift and go to state 64
+    NUMBER          shift and go to state 80
 
 
-state 50
+state 62
 
-    (31) instruction -> tma_predicate STORE slice_suffix LPAREN assignment . RPAREN
+    (31) instruction -> tma_predicate STORE slice_suffix LRB assignment . RRB
     (18) assignment -> assignment . COMMA assignment
 
-    RPAREN          shift and go to state 65
-    COMMA           shift and go to state 35
+    RRB             shift and go to state 81
+    COMMA           shift and go to state 46
 
 
-state 51
+state 63
 
-    (32) instruction -> tma_predicate STORE DOT MULTICAST LPAREN . assignment RPAREN
-    (13) assignment -> . IDENTIFIER LBRACKET assignment RBRACKET
+    (32) instruction -> tma_predicate STORE DOT MULTICAST LRB . assignment RRB
+    (13) assignment -> . IDENTIFIER LSB assignment RSB
     (18) assignment -> . assignment COMMA assignment
     (19) assignment -> . empty
     (20) assignment -> . NUMBER
@@ -749,65 +936,92 @@ state 51
     (22) assignment -> . IDENTIFIER
     (23) assignment -> . IDENTIFIER ASSIGN expression
     (12) empty -> .
-    (14) list -> . LBRACKET bare_list RBRACKET
+    (14) list -> . LSB bare_list RSB
 
-    IDENTIFIER      shift and go to state 22
-    NUMBER          shift and go to state 25
-    RPAREN          reduce using rule 12 (empty -> .)
+    IDENTIFIER      shift and go to state 29
+    NUMBER          shift and go to state 32
+    RRB             reduce using rule 12 (empty -> .)
     COMMA           reduce using rule 12 (empty -> .)
-    LBRACKET        shift and go to state 23
+    LSB             shift and go to state 30
 
-    assignment                     shift and go to state 66
-    empty                          shift and go to state 24
-    list                           shift and go to state 26
+    assignment                     shift and go to state 82
+    empty                          shift and go to state 31
+    list                           shift and go to state 33
 
-state 52
+state 64
+
+    (35) instruction -> MAKE_TENSOR template_suffix LRB assignment RRB .
+
+    MAKE_TENSOR     reduce using rule 35 (instruction -> MAKE_TENSOR template_suffix LRB assignment RRB .)
+    SLICE           reduce using rule 35 (instruction -> MAKE_TENSOR template_suffix LRB assignment RRB .)
+    TMA             reduce using rule 35 (instruction -> MAKE_TENSOR template_suffix LRB assignment RRB .)
+    $end            reduce using rule 35 (instruction -> MAKE_TENSOR template_suffix LRB assignment RRB .)
+
+
+state 65
+
+    (33) template_suffix -> DOUBLE_COLON LAB assignment RAB .
+
+    LRB             reduce using rule 33 (template_suffix -> DOUBLE_COLON LAB assignment RAB .)
+
+
+state 66
+
+    (34) template_suffix -> DOUBLE_COLON LAB NUMBER D . RAB
+
+    RAB             shift and go to state 83
+
+
+state 67
 
     (18) assignment -> assignment COMMA assignment .
     (18) assignment -> assignment . COMMA assignment
 
   ! shift/reduce conflict for COMMA resolved as shift
-    RPAREN          reduce using rule 18 (assignment -> assignment COMMA assignment .)
-    RBRACKET        reduce using rule 18 (assignment -> assignment COMMA assignment .)
-    COMMA           shift and go to state 35
+    RRB             reduce using rule 18 (assignment -> assignment COMMA assignment .)
+    RAB             reduce using rule 18 (assignment -> assignment COMMA assignment .)
+    RSB             reduce using rule 18 (assignment -> assignment COMMA assignment .)
+    COMMA           shift and go to state 46
 
   ! COMMA           [ reduce using rule 18 (assignment -> assignment COMMA assignment .) ]
 
 
-state 53
+state 68
 
-    (13) assignment -> IDENTIFIER LBRACKET assignment . RBRACKET
+    (13) assignment -> IDENTIFIER LSB assignment . RSB
     (18) assignment -> assignment . COMMA assignment
 
-    RBRACKET        shift and go to state 67
-    COMMA           shift and go to state 35
+    RSB             shift and go to state 84
+    COMMA           shift and go to state 46
 
 
-state 54
+state 69
 
     (23) assignment -> IDENTIFIER ASSIGN expression .
     (4) expression -> expression . PLUS term
     (5) expression -> expression . MINUS term
 
-    RPAREN          reduce using rule 23 (assignment -> IDENTIFIER ASSIGN expression .)
+    RRB             reduce using rule 23 (assignment -> IDENTIFIER ASSIGN expression .)
     COMMA           reduce using rule 23 (assignment -> IDENTIFIER ASSIGN expression .)
-    RBRACKET        reduce using rule 23 (assignment -> IDENTIFIER ASSIGN expression .)
-    PLUS            shift and go to state 57
-    MINUS           shift and go to state 58
+    RAB             reduce using rule 23 (assignment -> IDENTIFIER ASSIGN expression .)
+    RSB             reduce using rule 23 (assignment -> IDENTIFIER ASSIGN expression .)
+    PLUS            shift and go to state 72
+    MINUS           shift and go to state 73
 
 
-state 55
+state 70
 
-    (14) list -> LBRACKET bare_list RBRACKET .
+    (14) list -> LSB bare_list RSB .
 
-    RPAREN          reduce using rule 14 (list -> LBRACKET bare_list RBRACKET .)
-    COMMA           reduce using rule 14 (list -> LBRACKET bare_list RBRACKET .)
-    PLUS            reduce using rule 14 (list -> LBRACKET bare_list RBRACKET .)
-    MINUS           reduce using rule 14 (list -> LBRACKET bare_list RBRACKET .)
-    RBRACKET        reduce using rule 14 (list -> LBRACKET bare_list RBRACKET .)
+    RRB             reduce using rule 14 (list -> LSB bare_list RSB .)
+    COMMA           reduce using rule 14 (list -> LSB bare_list RSB .)
+    RAB             reduce using rule 14 (list -> LSB bare_list RSB .)
+    PLUS            reduce using rule 14 (list -> LSB bare_list RSB .)
+    MINUS           reduce using rule 14 (list -> LSB bare_list RSB .)
+    RSB             reduce using rule 14 (list -> LSB bare_list RSB .)
 
 
-state 56
+state 71
 
     (16) bare_list -> bare_list COMMA . expression
     (3) expression -> . term
@@ -817,22 +1031,22 @@ state 56
     (6) term -> . factor
     (7) term -> . term TIMES factor
     (8) term -> . term DIVIDE factor
-    (14) list -> . LBRACKET bare_list RBRACKET
+    (14) list -> . LSB bare_list RSB
     (9) factor -> . NUMBER
     (10) factor -> . IDENTIFIER
-    (11) factor -> . LPAREN expression RPAREN
+    (11) factor -> . LRB expression RRB
 
-    LBRACKET        shift and go to state 23
-    NUMBER          shift and go to state 43
-    IDENTIFIER      shift and go to state 44
-    LPAREN          shift and go to state 45
+    LSB             shift and go to state 30
+    NUMBER          shift and go to state 54
+    IDENTIFIER      shift and go to state 55
+    LRB             shift and go to state 56
 
-    expression                     shift and go to state 68
-    term                           shift and go to state 40
-    list                           shift and go to state 41
-    factor                         shift and go to state 42
+    expression                     shift and go to state 85
+    term                           shift and go to state 51
+    list                           shift and go to state 52
+    factor                         shift and go to state 53
 
-state 57
+state 72
 
     (4) expression -> expression PLUS . term
     (6) term -> . factor
@@ -840,16 +1054,16 @@ state 57
     (8) term -> . term DIVIDE factor
     (9) factor -> . NUMBER
     (10) factor -> . IDENTIFIER
-    (11) factor -> . LPAREN expression RPAREN
+    (11) factor -> . LRB expression RRB
 
-    NUMBER          shift and go to state 43
-    IDENTIFIER      shift and go to state 44
-    LPAREN          shift and go to state 45
+    NUMBER          shift and go to state 54
+    IDENTIFIER      shift and go to state 55
+    LRB             shift and go to state 56
 
-    term                           shift and go to state 69
-    factor                         shift and go to state 42
+    term                           shift and go to state 86
+    factor                         shift and go to state 53
 
-state 58
+state 73
 
     (5) expression -> expression MINUS . term
     (6) term -> . factor
@@ -857,117 +1071,137 @@ state 58
     (8) term -> . term DIVIDE factor
     (9) factor -> . NUMBER
     (10) factor -> . IDENTIFIER
-    (11) factor -> . LPAREN expression RPAREN
+    (11) factor -> . LRB expression RRB
 
-    NUMBER          shift and go to state 43
-    IDENTIFIER      shift and go to state 44
-    LPAREN          shift and go to state 45
+    NUMBER          shift and go to state 54
+    IDENTIFIER      shift and go to state 55
+    LRB             shift and go to state 56
 
-    term                           shift and go to state 70
-    factor                         shift and go to state 42
+    term                           shift and go to state 87
+    factor                         shift and go to state 53
 
-state 59
+state 74
 
     (7) term -> term TIMES . factor
     (9) factor -> . NUMBER
     (10) factor -> . IDENTIFIER
-    (11) factor -> . LPAREN expression RPAREN
+    (11) factor -> . LRB expression RRB
 
-    NUMBER          shift and go to state 43
-    IDENTIFIER      shift and go to state 44
-    LPAREN          shift and go to state 45
+    NUMBER          shift and go to state 54
+    IDENTIFIER      shift and go to state 55
+    LRB             shift and go to state 56
 
-    factor                         shift and go to state 71
+    factor                         shift and go to state 88
 
-state 60
+state 75
 
     (8) term -> term DIVIDE . factor
     (9) factor -> . NUMBER
     (10) factor -> . IDENTIFIER
-    (11) factor -> . LPAREN expression RPAREN
+    (11) factor -> . LRB expression RRB
 
-    NUMBER          shift and go to state 43
-    IDENTIFIER      shift and go to state 44
-    LPAREN          shift and go to state 45
+    NUMBER          shift and go to state 54
+    IDENTIFIER      shift and go to state 55
+    LRB             shift and go to state 56
 
-    factor                         shift and go to state 72
+    factor                         shift and go to state 89
 
-state 61
+state 76
 
-    (11) factor -> LPAREN expression . RPAREN
+    (11) factor -> LRB expression . RRB
     (4) expression -> expression . PLUS term
     (5) expression -> expression . MINUS term
 
-    RPAREN          shift and go to state 73
-    PLUS            shift and go to state 57
-    MINUS           shift and go to state 58
+    RRB             shift and go to state 90
+    PLUS            shift and go to state 72
+    MINUS           shift and go to state 73
 
 
-state 62
+state 77
 
-    (29) instruction -> tma_predicate LOAD slice_suffix LPAREN assignment RPAREN .
+    (36) instruction -> slice_predicate GEMM template_suffix LRB assignment RRB .
 
-    SLICE           reduce using rule 29 (instruction -> tma_predicate LOAD slice_suffix LPAREN assignment RPAREN .)
-    TMA             reduce using rule 29 (instruction -> tma_predicate LOAD slice_suffix LPAREN assignment RPAREN .)
-    $end            reduce using rule 29 (instruction -> tma_predicate LOAD slice_suffix LPAREN assignment RPAREN .)
+    MAKE_TENSOR     reduce using rule 36 (instruction -> slice_predicate GEMM template_suffix LRB assignment RRB .)
+    SLICE           reduce using rule 36 (instruction -> slice_predicate GEMM template_suffix LRB assignment RRB .)
+    TMA             reduce using rule 36 (instruction -> slice_predicate GEMM template_suffix LRB assignment RRB .)
+    $end            reduce using rule 36 (instruction -> slice_predicate GEMM template_suffix LRB assignment RRB .)
 
 
-state 63
+state 78
 
-    (30) instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment . RPAREN
+    (29) instruction -> tma_predicate LOAD slice_suffix LRB assignment RRB .
+
+    MAKE_TENSOR     reduce using rule 29 (instruction -> tma_predicate LOAD slice_suffix LRB assignment RRB .)
+    SLICE           reduce using rule 29 (instruction -> tma_predicate LOAD slice_suffix LRB assignment RRB .)
+    TMA             reduce using rule 29 (instruction -> tma_predicate LOAD slice_suffix LRB assignment RRB .)
+    $end            reduce using rule 29 (instruction -> tma_predicate LOAD slice_suffix LRB assignment RRB .)
+
+
+state 79
+
+    (30) instruction -> tma_predicate LOAD DOT MULTICAST LRB assignment . RRB
     (18) assignment -> assignment . COMMA assignment
 
-    RPAREN          shift and go to state 74
-    COMMA           shift and go to state 35
+    RRB             shift and go to state 91
+    COMMA           shift and go to state 46
 
 
-state 64
+state 80
 
     (28) slice_suffix -> DOT SLICE DOT NUMBER .
 
-    LPAREN          reduce using rule 28 (slice_suffix -> DOT SLICE DOT NUMBER .)
+    LRB             reduce using rule 28 (slice_suffix -> DOT SLICE DOT NUMBER .)
 
 
-state 65
+state 81
 
-    (31) instruction -> tma_predicate STORE slice_suffix LPAREN assignment RPAREN .
+    (31) instruction -> tma_predicate STORE slice_suffix LRB assignment RRB .
 
-    SLICE           reduce using rule 31 (instruction -> tma_predicate STORE slice_suffix LPAREN assignment RPAREN .)
-    TMA             reduce using rule 31 (instruction -> tma_predicate STORE slice_suffix LPAREN assignment RPAREN .)
-    $end            reduce using rule 31 (instruction -> tma_predicate STORE slice_suffix LPAREN assignment RPAREN .)
+    MAKE_TENSOR     reduce using rule 31 (instruction -> tma_predicate STORE slice_suffix LRB assignment RRB .)
+    SLICE           reduce using rule 31 (instruction -> tma_predicate STORE slice_suffix LRB assignment RRB .)
+    TMA             reduce using rule 31 (instruction -> tma_predicate STORE slice_suffix LRB assignment RRB .)
+    $end            reduce using rule 31 (instruction -> tma_predicate STORE slice_suffix LRB assignment RRB .)
 
 
-state 66
+state 82
 
-    (32) instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment . RPAREN
+    (32) instruction -> tma_predicate STORE DOT MULTICAST LRB assignment . RRB
     (18) assignment -> assignment . COMMA assignment
 
-    RPAREN          shift and go to state 75
-    COMMA           shift and go to state 35
+    RRB             shift and go to state 92
+    COMMA           shift and go to state 46
 
 
-state 67
+state 83
 
-    (13) assignment -> IDENTIFIER LBRACKET assignment RBRACKET .
+    (34) template_suffix -> DOUBLE_COLON LAB NUMBER D RAB .
 
-    RPAREN          reduce using rule 13 (assignment -> IDENTIFIER LBRACKET assignment RBRACKET .)
-    COMMA           reduce using rule 13 (assignment -> IDENTIFIER LBRACKET assignment RBRACKET .)
-    RBRACKET        reduce using rule 13 (assignment -> IDENTIFIER LBRACKET assignment RBRACKET .)
+    LRB             reduce using rule 34 (template_suffix -> DOUBLE_COLON LAB NUMBER D RAB .)
 
 
-state 68
+state 84
+
+    (13) assignment -> IDENTIFIER LSB assignment RSB .
+
+    RRB             reduce using rule 13 (assignment -> IDENTIFIER LSB assignment RSB .)
+    COMMA           reduce using rule 13 (assignment -> IDENTIFIER LSB assignment RSB .)
+    RAB             reduce using rule 13 (assignment -> IDENTIFIER LSB assignment RSB .)
+    RSB             reduce using rule 13 (assignment -> IDENTIFIER LSB assignment RSB .)
+
+
+state 85
 
     (16) bare_list -> bare_list COMMA expression .
     (4) expression -> expression . PLUS term
     (5) expression -> expression . MINUS term
 
-    RBRACKET        reduce using rule 16 (bare_list -> bare_list COMMA expression .)
+    RSB             reduce using rule 16 (bare_list -> bare_list COMMA expression .)
     COMMA           reduce using rule 16 (bare_list -> bare_list COMMA expression .)
-    PLUS            shift and go to state 57
-    MINUS           shift and go to state 58
+    PLUS            shift and go to state 72
+    MINUS           shift and go to state 73
 
 
-state 69
+state 86
 
     (4) expression -> expression PLUS term .
     (7) term -> term . TIMES factor
@@ -975,14 +1209,15 @@ state 69
 
     PLUS            reduce using rule 4 (expression -> expression PLUS term .)
     MINUS           reduce using rule 4 (expression -> expression PLUS term .)
-    RBRACKET        reduce using rule 4 (expression -> expression PLUS term .)
+    RSB             reduce using rule 4 (expression -> expression PLUS term .)
     COMMA           reduce using rule 4 (expression -> expression PLUS term .)
-    RPAREN          reduce using rule 4 (expression -> expression PLUS term .)
-    TIMES           shift and go to state 59
-    DIVIDE          shift and go to state 60
+    RRB             reduce using rule 4 (expression -> expression PLUS term .)
+    RAB             reduce using rule 4 (expression -> expression PLUS term .)
+    TIMES           shift and go to state 74
+    DIVIDE          shift and go to state 75
 
 
-state 70
+state 87
 
     (5) expression -> expression MINUS term .
     (7) term -> term . TIMES factor
@@ -990,14 +1225,15 @@ state 70
 
     PLUS            reduce using rule 5 (expression -> expression MINUS term .)
     MINUS           reduce using rule 5 (expression -> expression MINUS term .)
-    RBRACKET        reduce using rule 5 (expression -> expression MINUS term .)
+    RSB             reduce using rule 5 (expression -> expression MINUS term .)
     COMMA           reduce using rule 5 (expression -> expression MINUS term .)
-    RPAREN          reduce using rule 5 (expression -> expression MINUS term .)
-    TIMES           shift and go to state 59
-    DIVIDE          shift and go to state 60
+    RRB             reduce using rule 5 (expression -> expression MINUS term .)
+    RAB             reduce using rule 5 (expression -> expression MINUS term .)
+    TIMES           shift and go to state 74
+    DIVIDE          shift and go to state 75
 
 
-state 71
+state 88
 
     (7) term -> term TIMES factor .
 
@@ -1005,12 +1241,13 @@ state 71
     DIVIDE          reduce using rule 7 (term -> term TIMES factor .)
     PLUS            reduce using rule 7 (term -> term TIMES factor .)
     MINUS           reduce using rule 7 (term -> term TIMES factor .)
-    RBRACKET        reduce using rule 7 (term -> term TIMES factor .)
+    RSB             reduce using rule 7 (term -> term TIMES factor .)
     COMMA           reduce using rule 7 (term -> term TIMES factor .)
-    RPAREN          reduce using rule 7 (term -> term TIMES factor .)
+    RRB             reduce using rule 7 (term -> term TIMES factor .)
+    RAB             reduce using rule 7 (term -> term TIMES factor .)
 
 
-state 72
+state 89
 
     (8) term -> term DIVIDE factor .
 
@@ -1018,44 +1255,49 @@ state 72
     DIVIDE          reduce using rule 8 (term -> term DIVIDE factor .)
     PLUS            reduce using rule 8 (term -> term DIVIDE factor .)
     MINUS           reduce using rule 8 (term -> term DIVIDE factor .)
-    RBRACKET        reduce using rule 8 (term -> term DIVIDE factor .)
+    RSB             reduce using rule 8 (term -> term DIVIDE factor .)
     COMMA           reduce using rule 8 (term -> term DIVIDE factor .)
-    RPAREN          reduce using rule 8 (term -> term DIVIDE factor .)
+    RRB             reduce using rule 8 (term -> term DIVIDE factor .)
+    RAB             reduce using rule 8 (term -> term DIVIDE factor .)
 
 
-state 73
+state 90
 
-    (11) factor -> LPAREN expression RPAREN .
+    (11) factor -> LRB expression RRB .
 
-    TIMES           reduce using rule 11 (factor -> LPAREN expression RPAREN .)
-    DIVIDE          reduce using rule 11 (factor -> LPAREN expression RPAREN .)
-    PLUS            reduce using rule 11 (factor -> LPAREN expression RPAREN .)
-    MINUS           reduce using rule 11 (factor -> LPAREN expression RPAREN .)
-    RBRACKET        reduce using rule 11 (factor -> LPAREN expression RPAREN .)
-    COMMA           reduce using rule 11 (factor -> LPAREN expression RPAREN .)
-    RPAREN          reduce using rule 11 (factor -> LPAREN expression RPAREN .)
-
-
-state 74
-
-    (30) instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN .
-
-    SLICE           reduce using rule 30 (instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN .)
-    TMA             reduce using rule 30 (instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN .)
-    $end            reduce using rule 30 (instruction -> tma_predicate LOAD DOT MULTICAST LPAREN assignment RPAREN .)
+    TIMES           reduce using rule 11 (factor -> LRB expression RRB .)
+    DIVIDE          reduce using rule 11 (factor -> LRB expression RRB .)
+    PLUS            reduce using rule 11 (factor -> LRB expression RRB .)
+    MINUS           reduce using rule 11 (factor -> LRB expression RRB .)
+    RSB             reduce using rule 11 (factor -> LRB expression RRB .)
+    COMMA           reduce using rule 11 (factor -> LRB expression RRB .)
+    RRB             reduce using rule 11 (factor -> LRB expression RRB .)
+    RAB             reduce using rule 11 (factor -> LRB expression RRB .)
 
 
-state 75
+state 91
 
-    (32) instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN .
+    (30) instruction -> tma_predicate LOAD DOT MULTICAST LRB assignment RRB .
 
-    SLICE           reduce using rule 32 (instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN .)
-    TMA             reduce using rule 32 (instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN .)
-    $end            reduce using rule 32 (instruction -> tma_predicate STORE DOT MULTICAST LPAREN assignment RPAREN .)
+    MAKE_TENSOR     reduce using rule 30 (instruction -> tma_predicate LOAD DOT MULTICAST LRB assignment RRB .)
+    SLICE           reduce using rule 30 (instruction -> tma_predicate LOAD DOT MULTICAST LRB assignment RRB .)
+    TMA             reduce using rule 30 (instruction -> tma_predicate LOAD DOT MULTICAST LRB assignment RRB .)
+    $end            reduce using rule 30 (instruction -> tma_predicate LOAD DOT MULTICAST LRB assignment RRB .)
+
+
+state 92
+
+    (32) instruction -> tma_predicate STORE DOT MULTICAST LRB assignment RRB .
+
+    MAKE_TENSOR     reduce using rule 32 (instruction -> tma_predicate STORE DOT MULTICAST LRB assignment RRB .)
+    SLICE           reduce using rule 32 (instruction -> tma_predicate STORE DOT MULTICAST LRB assignment RRB .)
+    TMA             reduce using rule 32 (instruction -> tma_predicate STORE DOT MULTICAST LRB assignment RRB .)
+    $end            reduce using rule 32 (instruction -> tma_predicate STORE DOT MULTICAST LRB assignment RRB .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for SLICE in state 7 resolved as shift
-WARNING: shift/reduce conflict for TMA in state 7 resolved as shift
-WARNING: shift/reduce conflict for COMMA in state 52 resolved as shift
+WARNING: shift/reduce conflict for MAKE_TENSOR in state 8 resolved as shift
+WARNING: shift/reduce conflict for SLICE in state 8 resolved as shift
+WARNING: shift/reduce conflict for TMA in state 8 resolved as shift
+WARNING: shift/reduce conflict for COMMA in state 67 resolved as shift

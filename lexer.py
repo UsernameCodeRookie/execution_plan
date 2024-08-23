@@ -1,8 +1,9 @@
 import ply.lex as lex
 
 tokens = (
-    'NUMBER', 'CLAIM_BAR', 'COMMA', 'IDENTIFIER', 'LPAREN', 'RPAREN', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'DOT',
-    'SLICE', 'SPM_ALOCATE', 'ASSIGN', 'TMA', 'MULTICAST', 'LOAD', 'STORE', 'LBRACKET', 'RBRACKET'
+    'NUMBER', 'CLAIM_BAR', 'COMMA', 'IDENTIFIER', 'LRB', 'RRB', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'DOT',
+    'SLICE', 'SPM_ALOCATE', 'ASSIGN', 'TMA', 'MULTICAST', 'LOAD', 'STORE', 'LSB', 'RSB', 'LAB', 'RAB',
+    'DOUBLE_COLON', 'MAKE_TENSOR', 'GEMM', 'D'
 )
 
 reserved = {
@@ -12,20 +13,26 @@ reserved = {
     'tma': 'TMA',
     'multicast': 'MULTICAST',
     'load': 'LOAD',
-    'store': 'STORE'
+    'store': 'STORE',
+    'make_tensor': 'MAKE_TENSOR',
+    'gemm': 'GEMM',
+    'D': 'D'
 }
 
-t_COMMA = r','
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
-t_LBRACKET = r'\['
-t_RBRACKET = r'\]'
+t_COMMA = r'\,'
+t_LRB = r'\('
+t_RRB = r'\)'
+t_LSB = r'\['
+t_RSB = r'\]'
+t_LAB = r'\<'
+t_RAB = r'\>'
 t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
 t_DIVIDE = r'\/'
 t_DOT = r'\.'
-t_ASSIGN = r'='
+t_ASSIGN = r'\='
+t_DOUBLE_COLON = r'\:\:'
 
 
 def t_IDENTIFIER(t):

@@ -1,8 +1,10 @@
-from objects import *
+from objects import Slice
 from parser import parser
 from functools import partial
 from typing import List
+from memory import TMA
 import logging
+import numpy as np
 
 # batch
 BATCH_SIZE = 50
@@ -12,11 +14,13 @@ class CpuIterator():
 
     def __init__(self, *args):
 
-        self.file = open(args[0], 'r')
+        self.file = open('resource/' + args[0], 'r')
         self.slices = args[1]
+        self.tma = args[2]
         self.res_batch = []
 
         self.slices: List[Slice]
+        self.tma: TMA
 
     def __iter__(self):
         return self
@@ -48,7 +52,6 @@ class CpuIterator():
                 if lines:
                     return ''.join(lines)
                 else:
-                    self.file.close()
                     return None
             lines.append(line)
         return ''.join(lines)
@@ -56,7 +59,19 @@ class CpuIterator():
     def parse_program(self, instr, args):
         program = []
 
+        # parse args
+        for i, arg in enumerate(args):
+            if isinstance(arg, tuple):
+                _, args[i] = arg
+
         match instr:
+            case 'make_tensor':
+                dim_len, tensor_id, dim, tile_dim, dtype = args
+                logging.log(8, f'Program: Make Tensor {tensor_id} with dimension {
+                            dim} and tile dimension {tile_dim} of type {dtype}')
+                func = self.tma.make_tensor(tensor_id, dim, tile_dim, dtype)
+                program.append(func)
+
             case 'spm_allocate':
                 slice_idx, id, shape, dtype = args
                 logging.log(8, f'Program: SPM {slice_idx} allocate {
@@ -76,31 +91,42 @@ class CpuIterator():
 
             case 'tma_store_slice':
                 slice_idx, id, tile, wait_bar = args
-                _, wait_bar = wait_bar  # ('wait_bar', id)
                 tensor_id, tile_pos = tile
 
                 logging.log(8, f'Program: TMA store from Slice {slice_idx} to Tensor {tensor_id} Tile {
                     tile_pos} and wait Barrier {wait_bar}')
 
-                array = None
+                array = np.array([1])
                 slice_to_tma = self.slices[slice_idx].store_wait_barrier(
                     id, wait_bar, array)
+                tma_to_ddr = self.tma.write_ddr(tensor_id, tile_pos, array)
                 program.append(slice_to_tma)
+                program.append(tma_to_ddr)
 
             case 'tma_load_multicast':
                 tile, id, mask, set_bar = args
                 tensor_id, tile_pos = tile
-                _, mask = mask
-                _, set_bar = set_bar
 
                 logging.log(8, f'Program: TMA load multicast from Tensor {tensor_id} Tile {
                     tile_pos} to Slice {mask} and set Barrier {set_bar}')
 
-                array = None
+                array = np.array([1])
+                slice_to_tma = self.tma.read_ddr(tensor_id, tile_pos, array)
+                program.append(slice_to_tma)
                 for i in mask:
                     tma_to_slice = self.slices[i].load_set_barrier(
                         id, set_bar, array)
                     program.append(tma_to_slice)
+
+            case 'slice_gemm':
+                slice_idx, template_args, q, k, v, wait_bar_list, set_bar_list = args
+
+                logging.log(8, f'Program: Slice {slice_idx} GEMM with template args {template_args}, q {
+                            q} k{k} v{v}, wait Barrier {wait_bar_list} set Barrier {set_bar_list}')
+
+                gemm = self.slices[slice_idx].gemm(
+                    q, k, v, wait_bar_list, set_bar_list)
+                program.append(gemm)
 
         return program
 
