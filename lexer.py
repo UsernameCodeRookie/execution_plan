@@ -3,13 +3,14 @@ import ply.lex as lex
 tokens = (
     'NUMBER', 'CLAIM_BAR', 'COMMA', 'IDENTIFIER', 'LRB', 'RRB', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'DOT',
     'SLICE', 'SPM_ALOCATE', 'ASSIGN', 'TMA', 'MULTICAST', 'LOAD', 'STORE', 'LSB', 'RSB', 'LAB', 'RAB',
-    'DOUBLE_COLON', 'MAKE_TENSOR', 'GEMM', 'D'
+    'DOUBLE_COLON', 'MAKE_TENSOR', 'GEMM', 'D', 'SPM_FREE'
 )
 
 reserved = {
     'claim_bar': 'CLAIM_BAR',
     'slice': 'SLICE',
     'spm_allocate': 'SPM_ALOCATE',
+    'spm_free': 'SPM_FREE',
     'tma': 'TMA',
     'multicast': 'MULTICAST',
     'load': 'LOAD',

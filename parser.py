@@ -145,6 +145,12 @@ def p_instruction_slice_spm_alocate(p):
     p[0] = ('spm_allocate', p[1] + p[4])
 
 
+def p_instruction_slice_spm_free(p):
+    'instruction : slice_predicate SPM_FREE LRB assignment RRB'
+    logging.log(4, 'Parser: Freeing SPM with assignment: %s' % p[4])
+    p[0] = ('spm_free', p[1] + p[4])
+
+
 def p_tma_predicate(p):
     'tma_predicate : TMA DOT'
 

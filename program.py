@@ -81,6 +81,12 @@ class CpuIterator():
                     id, shape, dtype)
                 program.append(func)
 
+            case 'spm_free':
+                slice_idx, id = args
+                logging.log(8, f'Program: SPM {slice_idx} free {id}')
+                func = self.slices[slice_idx].spm_free(id)
+                program.append(func)
+
             case 'claim_barrier':
                 slice_idx, id, shape, dtype = args
                 logging.log(8, f'Program: Slice {slice_idx} claim Barrier {

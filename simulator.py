@@ -14,7 +14,7 @@ class Simulator():
 
         self.program = CpuIterator(file_path, self.slices, self.tma)
 
-    def run(self, simtime=200):
+    def run(self, simtime=10000):
         self.env.run(until=simtime)
 
     def process(self, event):

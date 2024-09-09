@@ -36,6 +36,12 @@ class Slice():
         self.spm.allocate(*args)
         yield self.env.timeout(0)
 
+    def spm_free(self, id):
+        logging.log(16, f'[{self.env.now}]Simulator: Slice {
+            self.index} spm_free {id}')
+        self.spm.free(id)
+        yield self.env.timeout(0)
+
     def claim_barrier(self, barrier_id, shape, dtype):
         logging.log(16, f'[{self.env.now}]Simulator: Slice {
             self.index} claim_barrier {barrier_id}')
@@ -88,6 +94,9 @@ class ScratchPadMemory():
     def allocate(self, id, shape, dtype):
         array = np.zeros(shape, dtype=dtype)
         self.memory[id] = array
+
+    def free(self, id):
+        del self.memory[id]
 
     def read(self, id, array):
         array = self.memory[id]
