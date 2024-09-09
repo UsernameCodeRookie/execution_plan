@@ -64,7 +64,7 @@ lexer = lex.lex()
 
 if __name__ == '__main__':
 
-    program = open('program.txt').read()
+    program = open('resource/program.txt').read()
     res = lexer.input(program)
     for token in lexer:
         print(token)
