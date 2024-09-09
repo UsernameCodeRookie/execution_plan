@@ -6,8 +6,8 @@ import os
 import shutil
 
 
-DDR_READ_TIME = 20
-DDR_WRITE_TIME = 20
+DDR_READ_TIME = 1
+DDR_WRITE_TIME = 1
 
 
 class TMA():

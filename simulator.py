@@ -25,7 +25,7 @@ class Simulator():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=16, filename='resource/runtime.log',
+    logging.basicConfig(level=14, filename='resource/runtime.log',
                         filemode='w', format='%(message)s')
     sim = Simulator('program.txt')
     sim.init()

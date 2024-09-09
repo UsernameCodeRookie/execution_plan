@@ -49,16 +49,24 @@ class Slice():
         yield self.env.timeout(0)
 
     def barrier_request(self, barrier_id_list):
+        logging.log(14, f'[{self.env.now}]Barrier: Slice {
+            self.index} barrier_request {barrier_id_list}')
         for barrier_id in barrier_id_list:
             yield self.barriers[barrier_id].request()
 
     def barrier_release(self, barrier_id_list):
+        logging.log(14, f'[{self.env.now}]Barrier: Slice {
+            self.index} barrier_release {barrier_id_list}')
         for barrier_id in barrier_id_list:
             yield self.barriers[barrier_id].release()
 
     def barrier_wait(self, barrier_id_list):
+        logging.log(14, f'[{self.env.now}]Barrier: Slice {
+            self.index} barrier_wait {barrier_id_list} start')
         while any([self.barriers[barrier_id].has_request() for barrier_id in barrier_id_list]):
             yield self.env.timeout(1)
+        logging.log(14, f'[{self.env.now}]Barrier: Slice {
+            self.index} barrier_wait {barrier_id_list} end')
 
     def load(self, allocate_id, array):
         logging.log(16, f'[{self.env.now}]Simulator: Slice {self.index} load {
