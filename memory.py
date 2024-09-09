@@ -42,33 +42,35 @@ class DDR():
     def __init__(self, env: simpy.Environment):
         self.env = env
         self.tensor_map = {}
+        self.tile_shape = {}
 
     def make_tensor(self, tensor_id, dimension, tile_dimension, dtype):
-        shape = list(map(lambda e, f: e * f, dimension, tile_dimension))
-        self.tile_shape = tile_dimension
+        self.tile_shape[tensor_id] = tile_dimension
 
         path = os.path.join('resource', f'{tensor_id}.npy')
 
         mmap = np.memmap(path, dtype=dtype,
-                         mode='w+', shape=shape)
+                         mode='r+', shape=dimension)
         self.tensor_map[tensor_id] = mmap
 
-    def read(self, tensor_id, tile_pos, array):
+    def read(self, tensor_id, tile_pos, data):
         mmap = self.tensor_map[tensor_id]
-        array = mmap[self.get_slices(tile_pos)]
+        data.array = mmap[self.get_slices(tile_pos, tensor_id)]
 
-    def write(self, tensor_id, tile_pos, array):
+    def write(self, tensor_id, tile_pos, data):
         mmap = self.tensor_map[tensor_id]
-        mmap[self.get_slices(tile_pos)] = array[:]
+        mmap[self.get_slices(tile_pos, tensor_id)] = data.array[:]
 
     def position_complete(self, tile_pos):
         return [1 for _ in range(len(self.tile_shape) - len(tile_pos))] + tile_pos
 
-    def get_slices(self, tile_pos):
+    def get_slices(self, tile_pos, tensor_id):
         tile_pos = self.position_complete(tile_pos)
 
-        start_pos = list(map(lambda e, f: e * f, tile_pos, self.tile_shape))
-        end_pos = list(map(lambda e, f: e + f, start_pos, self.tile_shape))
+        start_pos = list(map(lambda e, f: e * f, tile_pos,
+                         self.tile_shape[tensor_id]))
+        end_pos = list(map(lambda e, f: e + f, start_pos,
+                       self.tile_shape[tensor_id]))
 
         slices = tuple(slice(s, e) for s, e in zip(start_pos, end_pos))
         return slices

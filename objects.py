@@ -2,7 +2,7 @@ import numpy as np
 import simpy
 import logging
 
-GEMM_TIME = 100
+GEMM_TIME = 1
 SPM_READ_TIME = 10
 SPM_WRITE_TIME = 10
 
@@ -98,11 +98,11 @@ class ScratchPadMemory():
     def free(self, id):
         del self.memory[id]
 
-    def read(self, id, array):
-        array = self.memory[id]
+    def read(self, id, data):
+        data.array = self.memory[id]
 
-    def write(self, id, array):
-        self.memory[id] = array
+    def write(self, id, data):
+        self.memory[id] = data.array
 
     def get(self, *args):
         res = []

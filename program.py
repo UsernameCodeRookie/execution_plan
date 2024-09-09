@@ -10,6 +10,11 @@ import numpy as np
 BATCH_SIZE = 50
 
 
+class Data():
+    def __init__(self, array):
+        self.array = array
+
+
 class CpuIterator():
 
     def __init__(self, *args):
@@ -104,12 +109,13 @@ class CpuIterator():
                 logging.log(8, f'Program: TMA store from Slice {slice_idx} to Tensor {tensor_id} Tile {
                     tile_pos} and wait Barrier {wait_bar}')
 
-                array = np.array([1])
+                # array = np.array([1])
+                array = Data(np.array([1]))
 
                 wait_barrier = self.slices[slice_idx].barrier_wait(wait_bar)
                 program.append(wait_barrier)
 
-                slice_to_tma = self.slices[slice_idx].store(id, array)
+                slice_to_tma = self.slices[slice_idx].load(id, array)
                 tma_to_ddr = self.tma.write_ddr(tensor_id, tile_pos, array)
                 program.append(slice_to_tma)
                 program.append(tma_to_ddr)
@@ -121,16 +127,17 @@ class CpuIterator():
                 logging.log(8, f'Program: TMA load multicast from Tensor {tensor_id} Tile {
                     tile_pos} to Slice {mask} and set Barrier {set_bar}')
 
-                array = np.array([1])
+                # array = np.array([1])
+                array = Data(np.array([1]))
 
                 for i in mask:
                     barrier_request = self.slices[i].barrier_request(set_bar)
                     program.append(barrier_request)
 
-                slice_to_tma = self.tma.read_ddr(tensor_id, tile_pos, array)
-                program.append(slice_to_tma)
+                ddr_to_tma = self.tma.read_ddr(tensor_id, tile_pos, array)
+                program.append(ddr_to_tma)
                 for i in mask:
-                    tma_to_slice = self.slices[i].load(id, array)
+                    tma_to_slice = self.slices[i].store(id, array)
                     program.append(tma_to_slice)
                     barrier_release = self.slices[i].barrier_release(set_bar)
                     program.append(barrier_release)

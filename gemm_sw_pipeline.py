@@ -113,14 +113,14 @@ def generate_naive_mha_plan(batch_size, seq_len, hidden_size, head_dim, bM, bN, 
                             if not Q_Unique_per_It[m]:
                                 pass
                             else:
-                                print(f"tma.load.multicast(q[{batch},{head},{m},{tile_iter % 2}],q_spm{
+                                print(f"tma.load.multicast(q[{batch},{head},{m},{k}],q_spm{
                                       tile_iter % 2},mask={Q_Unique_per_It[m]},set_bar=[q_bar{tile_iter % 2}])")
 
                         for n in range(gridN):
                             if not K_Unique_per_It[n]:
                                 pass
                             else:
-                                print(f"tma.load.multicast(k[{batch},{head},{tile_iter % 2},{n}],k_spm{
+                                print(f"tma.load.multicast(k[{batch},{head},{k},{n}],k_spm{
                                       tile_iter % 2},mask={K_Unique_per_It[n]},set_bar=[k_bar{tile_iter % 2}])")
                     # 1~max-2 iter
                     else:
@@ -136,14 +136,14 @@ def generate_naive_mha_plan(batch_size, seq_len, hidden_size, head_dim, bM, bN, 
                             if not Q_Unique_per_It[m]:
                                 pass
                             else:
-                                print(f"tma.load.multicast(q[{batch},{head},{m},{tile_iter % 2}],q_spm{
+                                print(f"tma.load.multicast(q[{batch},{head},{m},{k}],q_spm{
                                       tile_iter % 2},mask={Q_Unique_per_It[m]},set_bar=[q_bar{tile_iter % 2}])")
 
                         for n in range(gridN):
                             if not K_Unique_per_It[n]:
                                 pass
                             else:
-                                print(f"tma.load.multicast(k[{batch},{head},{tile_iter % 2},{n}],k_spm{
+                                print(f"tma.load.multicast(k[{batch},{head},{k},{n}],k_spm{
                                       tile_iter % 2},mask={K_Unique_per_It[n]},set_bar=[k_bar{tile_iter % 2}])")
 
                         for slice_id in range(slice_count):
