@@ -127,6 +127,10 @@ def p_assignment(p):
     p[0] = [(p[1], p[3])]
 
 
+def p_error(p):
+    logging.log(4, "Syntax error in input: %s" % p)
+
+
 def p_slice_predicate_slice_number(p):
     'slice_predicate : SLICE DOT NUMBER DOT'
     logging.log(4, 'Parser: Slicing number with value: %s' % p[3])

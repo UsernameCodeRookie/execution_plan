@@ -3,6 +3,7 @@ from memory import TMA
 from program import CpuIterator
 import simpy
 import logging
+import sys
 
 
 class Simulator():
@@ -25,7 +26,8 @@ class Simulator():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=16, format='%(message)s')
+    logging.basicConfig(level=0, filename='resource/runtime.log',
+                        filemode='w', format='%(message)s')
     sim = Simulator('program.txt')
     sim.init()
     sim.run()
