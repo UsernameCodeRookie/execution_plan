@@ -53,6 +53,8 @@ class CpuIterator():
                     return ''.join(lines)
                 else:
                     return None
+            elif line.startswith('-'):
+                continue
             lines.append(line)
         return ''.join(lines)
 
