@@ -128,6 +128,7 @@ class CPU():
         program = next(program_iterator)
 
         if program is None:
+            raise simpy.core.StopSimulation(1)
             return
 
         for instr in program:

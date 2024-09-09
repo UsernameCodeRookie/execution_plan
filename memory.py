@@ -1,6 +1,9 @@
 import simpy
 import numpy as np
 import logging
+import tempfile
+import os
+import shutil
 
 
 DDR_READ_TIME = 20
@@ -43,7 +46,10 @@ class DDR():
     def make_tensor(self, tensor_id, dimension, tile_dimension, dtype):
         shape = list(map(lambda e, f: e * f, dimension, tile_dimension))
         self.tile_shape = tile_dimension
-        mmap = np.memmap(f'resource/{tensor_id}.npy', dtype=dtype,
+
+        path = os.path.join('resource', f'{tensor_id}.npy')
+
+        mmap = np.memmap(path, dtype=dtype,
                          mode='w+', shape=shape)
         self.tensor_map[tensor_id] = mmap
 

@@ -3,7 +3,6 @@ from memory import TMA
 from program import CpuIterator
 import simpy
 import logging
-import sys
 
 
 class Simulator():
@@ -15,7 +14,7 @@ class Simulator():
 
         self.program = CpuIterator(file_path, self.slices, self.tma)
 
-    def run(self, simtime=10000):
+    def run(self, simtime=None):
         self.env.run(until=simtime)
 
     def process(self, event):
