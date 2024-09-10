@@ -11,24 +11,7 @@ class Slice():
     def __init__(self, env: simpy.Environment, index):
         self.env = env
         self.spm = ScratchPadMemory(env)
-        self.barriers = {}
         self.index = index
-
-    class Barrier():
-        def __init__(self, env, shape, dtype):
-            self.shape = shape
-            self.dtype = dtype
-            self.res = simpy.Resource(env)
-
-        def has_request(self):
-            return self.res.count != 0
-
-        def request(self):
-            self.req = self.res.request()
-            return self.req
-
-        def release(self):
-            return self.res.release(self.req)
 
     def spm_allocate(self, *args):
         logging.log(16, f'[{self.env.now}]Simulator: Slice {
@@ -41,32 +24,6 @@ class Slice():
             self.index} spm_free {id}')
         self.spm.free(id)
         yield self.env.timeout(0)
-
-    def claim_barrier(self, barrier_id, shape, dtype):
-        logging.log(16, f'[{self.env.now}]Simulator: Slice {
-            self.index} claim_barrier {barrier_id}')
-        self.barriers[barrier_id] = self.Barrier(self.env, shape, dtype)
-        yield self.env.timeout(0)
-
-    def barrier_request(self, barrier_id_list):
-        logging.log(14, f'[{self.env.now}]Barrier: Slice {
-            self.index} barrier_request {barrier_id_list}')
-        for barrier_id in barrier_id_list:
-            yield self.barriers[barrier_id].request()
-
-    def barrier_release(self, barrier_id_list):
-        logging.log(14, f'[{self.env.now}]Barrier: Slice {
-            self.index} barrier_release {barrier_id_list}')
-        for barrier_id in barrier_id_list:
-            yield self.barriers[barrier_id].release()
-
-    def barrier_wait(self, barrier_id_list):
-        logging.log(14, f'[{self.env.now}]Barrier: Slice {
-            self.index} barrier_wait {barrier_id_list} start')
-        while any([self.barriers[barrier_id].has_request() for barrier_id in barrier_id_list]):
-            yield self.env.timeout(1)
-        logging.log(14, f'[{self.env.now}]Barrier: Slice {
-            self.index} barrier_wait {barrier_id_list} end')
 
     def load(self, allocate_id, array):
         logging.log(16, f'[{self.env.now}]Simulator: Slice {self.index} load {
