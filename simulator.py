@@ -1,6 +1,7 @@
-from objects import Slice, CPU
+from objects import Slice
 from memory import TMA
-from program import CpuIterator
+from program import Program
+from scheduler import Scheduler, Barrier, CPU
 import simpy
 import logging
 
@@ -9,19 +10,19 @@ class Simulator():
     def __init__(self, file_path):
         self.env = simpy.Environment()
         self.slices = [Slice(self.env, i) for i in range(16)]
-        self.cpu = CPU(self.env)
         self.tma = TMA(self.env)
+        self.barrier = Barrier(self.env)
 
-        self.program = CpuIterator(file_path, self.slices, self.tma)
+        self.program = Program(file_path, self.slices, self.tma)
+
+        self.scheduler = Scheduler(self.slices, self.tma, self.barrier)
+        self.cpu = CPU(self.env, self.program, self.scheduler)
 
     def run(self, simtime=None):
         self.env.run(until=simtime)
 
-    def process(self, event):
-        self.env.process(event)
-
     def init(self):
-        self.env.process(self.cpu.run(self.program))
+        self.env.process(self.cpu.loop())
 
 
 if __name__ == '__main__':

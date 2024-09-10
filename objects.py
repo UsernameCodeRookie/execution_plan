@@ -119,25 +119,25 @@ class ScratchPadMemory():
         return tuple(res)
 
 
-CPU_CYCLE_TIME = 1
+# CPU_CYCLE_TIME = 1
 
 
-class CPU():
-    def __init__(self, env: simpy.Environment):
-        self.env = env
+# class CPU():
+#     def __init__(self, env: simpy.Environment):
+#         self.env = env
 
-    def run(self, program_iterator):
-        while True:
-            yield self.env.timeout(CPU_CYCLE_TIME)
-            self.env.process(self.run_program(program_iterator))
+#     def run(self, program_iterator):
+#         while True:
+#             yield self.env.timeout(CPU_CYCLE_TIME)
+#             self.env.process(self.run_program(program_iterator))
 
-    def run_program(self, program_iterator):
+#     def run_program(self, program_iterator):
 
-        program = next(program_iterator)
+#         program = next(program_iterator)
 
-        if program is None:
-            raise simpy.core.StopSimulation(1)
-            return
+#         if program is None:
+#             raise simpy.core.StopSimulation(1)
+#             return
 
-        for instr in program:
-            yield self.env.process(instr)
+#         for instr in program:
+#             yield self.env.process(instr)
