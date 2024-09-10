@@ -1,9 +1,7 @@
 import simpy
 import numpy as np
 import logging
-import tempfile
 import os
-import shutil
 
 
 DDR_READ_TIME = 1

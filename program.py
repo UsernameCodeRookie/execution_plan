@@ -1,10 +1,4 @@
-from objects import Slice
 from parser import parser
-from functools import partial
-from typing import List
-from memory import TMA
-import logging
-import numpy as np
 
 # batch
 BATCH_SIZE = 50
