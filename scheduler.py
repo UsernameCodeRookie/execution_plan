@@ -35,11 +35,15 @@ class Barrier():
         yield self.env.timeout(0)
 
     def wait_bar(self, idx, bar_list):
+        stall = False
+
         for bar_id in bar_list:
             if self.barriers[idx][bar_id] > 0:
-                self.stall[idx] = True
+                stall = True
                 self.insert_wait_bar(idx, bar_list)
                 break
+
+        self.stall[idx] = stall
         yield self.env.timeout(0)
 
     def insert_wait_bar(self, idx, bar_list):
@@ -66,17 +70,20 @@ class Scheduler():
         self.tma = tma
         self.barrier = barrier
 
-    def schedule(self, instr, args):
+    def schedule(self, program):
         runtime = []
-        # not barrier instruction
-        # directly execute
-        if instr == 'make_tensor' or instr == 'spm_allocate' or instr == 'claim_barrier':
-            task = self.not_barrier_instr(instr, args)
-            runtime.append(task)
-        # barrier instruction
-        # push to barrier queue
-        else:
-            self.barrier_instr(instr, args)
+
+        if program is not None:
+            instr, args = program
+            # not barrier instruction
+            # directly execute
+            if instr == 'make_tensor' or instr == 'spm_allocate' or instr == 'claim_barrier':
+                task = self.not_barrier_instr(instr, args)
+                runtime.append(task)
+            # barrier instruction
+            # push to barrier queue
+            else:
+                self.barrier_instr(instr, args)
 
         self.check_queue(runtime)
 
@@ -160,6 +167,12 @@ class Scheduler():
                 self.barrier.append(slice_idx, [wait_bar])
                 self.barrier.append(slice_idx, [req_bar, gemm, rel_bar])
 
+    def queue_empty(self):
+        for i in range(16):
+            if not self.barrier.empty(i):
+                return False
+        return True
+
 
 CPU_CYCLE_TIME = 1
 
@@ -175,11 +188,10 @@ class CPU:
             yield self.env.timeout(CPU_CYCLE_TIME)
             program = next(self.program_iter)
 
-            if program is None:
+            if program is None and self.scheduler.queue_empty():
                 break
 
-            instr, args = program
-            runtime = self.scheduler.schedule(instr, args)
+            runtime = self.scheduler.schedule(program)
 
             for task in runtime:
                 self.env.process(self.run_task(task))
