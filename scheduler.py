@@ -70,15 +70,13 @@ class Scheduler():
         runtime = []
         # not barrier instruction
         # directly execute
-        if instr == 'make_tensor' or instr == 'spm_allocate' or instr == 'spm_free':
+        if instr == 'make_tensor' or instr == 'spm_allocate' or instr == 'claim_barrier':
             task = self.not_barrier_instr(instr, args)
-
+            runtime.append(task)
         # barrier instruction
         # push to barrier queue
         else:
-            task = self.barrier_instr(instr, args)
-
-        runtime.append(task)
+            self.barrier_instr(instr, args)
 
         self.check_queue(runtime)
 
@@ -86,6 +84,10 @@ class Scheduler():
 
     def not_barrier_instr(self, instr, args):
         match instr:
+            case 'claim_barrier':
+                slice_idx, id, shape, dtype = args
+                func = self.barrier.claim_bar(slice_idx, id)
+
             case 'make_tensor':
                 dim_len, tensor_id, dim, tile_dim, dtype = args
                 func = self.tma.make_tensor(tensor_id, dim, tile_dim, dtype)
@@ -93,10 +95,6 @@ class Scheduler():
             case 'spm_allocate':
                 slice_idx, id, shape, dtype = args
                 func = self.slices[slice_idx].spm_allocate(id, shape, dtype)
-
-            case 'spm_free':
-                slice_idx, id = args
-                func = self.slices[slice_idx].spm_free(id)
 
         task = [func]
         return task
@@ -112,12 +110,11 @@ class Scheduler():
             runtime.append(task)
 
     def barrier_instr(self, instr, args):
-        task = []
         match instr:
-            case 'claim_barrier':
-                slice_idx, id, shape, dtype = args
-                claim = self.barrier.claim_bar(slice_idx, id)
-                task.append(claim)
+            case 'spm_free':
+                slice_idx, id = args
+                free = self.slices[slice_idx].spm_free(id)
+                self.barrier.append(slice_idx, [free])
 
             case 'tma_store_slice':
                 slice_idx, id, tile, wait_bar_list = args
@@ -136,18 +133,21 @@ class Scheduler():
                 tile, id, mask, set_bar_list = args
                 tensor_id, tile_pos = tile
 
+                req_bar_list = {}
+
                 for i in mask:
                     req_bar = self.barrier.req_bar(i, set_bar_list)
-                    task.append(req_bar)
+                    req_bar_list[i] = req_bar
 
                 array = Data(np.array([1]))
                 ddr_to_tma = self.tma.read_ddr(tensor_id, tile_pos, array)
-                task.append(ddr_to_tma)
 
                 for i in mask:
+                    req_bar = req_bar_list[i]
                     tma_to_slice = self.slices[i].store(id, array)
                     rel_bar = self.barrier.rel_bar(i, set_bar_list)
-                    task += [tma_to_slice, rel_bar]
+                    self.barrier.append(
+                        i, [req_bar, ddr_to_tma, tma_to_slice, rel_bar])
 
             case 'slice_gemm':
                 slice_idx, template_args, q, k, v, wait_bar_list, set_bar_list = args
@@ -159,8 +159,6 @@ class Scheduler():
 
                 self.barrier.append(slice_idx, [wait_bar])
                 self.barrier.append(slice_idx, [req_bar, gemm, rel_bar])
-
-        return task
 
 
 CPU_CYCLE_TIME = 1

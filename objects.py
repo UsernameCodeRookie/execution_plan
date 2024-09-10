@@ -2,7 +2,7 @@ import numpy as np
 import simpy
 import logging
 
-GEMM_TIME = 1
+GEMM_TIME = 100
 SPM_READ_TIME = 10
 SPM_WRITE_TIME = 10
 
