@@ -13,7 +13,7 @@ class Simulator():
         self.tma = TMA(self.env)
         self.barrier = Barrier(self.env)
 
-        self.program = Program(file_path, self.slices, self.tma)
+        self.program = Program(file_path)
 
         self.scheduler = Scheduler(self.slices, self.tma, self.barrier)
         self.cpu = CPU(self.env, self.program, self.scheduler)

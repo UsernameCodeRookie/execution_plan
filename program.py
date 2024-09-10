@@ -17,15 +17,9 @@ class Data():
 
 class Program():
 
-    def __init__(self, *args):
-
-        self.file = open('resource/' + args[0], 'r')
-        self.slices = args[1]
-        self.tma = args[2]
+    def __init__(self, path):
+        self.file = open('resource/' + path, 'r')
         self.res_batch = []
-
-        self.slices: List[Slice]
-        self.tma: TMA
 
     def __iter__(self):
         return self
