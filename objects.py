@@ -3,8 +3,8 @@ import simpy
 import logging
 
 GEMM_TIME = 100
-SPM_READ_TIME = 10
-SPM_WRITE_TIME = 10
+SPM_READ_TIME = 1
+SPM_WRITE_TIME = 1
 
 
 class Slice():

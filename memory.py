@@ -4,8 +4,8 @@ import logging
 import os
 
 
-DDR_READ_TIME = 1
-DDR_WRITE_TIME = 1
+DDR_READ_TIME = 10
+DDR_WRITE_TIME = 10
 
 
 class TMA():
