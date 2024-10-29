@@ -21,7 +21,7 @@ def sample_tensor(state):
     dim_len, tensor_id, dim, tile_dim, dtype = args
 
     fp = np.memmap(f'resource/{tensor_id}.npy',
-                   dtype=dtype, mode='r', shape=dim)
+                   dtype=dtype, mode='r', shape=tuple(dim))
 
     iter_space = list(map(lambda e, f: e // f, dim, tile_dim))
 
@@ -66,7 +66,7 @@ def random_tile(fp, pos, dimention, tile_dimention, dtype):
 
 def generate_random_data(file_path, dimention, tile_dimention, dtype):
     iter_space = list(map(lambda e, f: e // f, dimention, tile_dimention))
-    fp = np.memmap(file_path, dtype=dtype, mode='w+', shape=dimention)
+    fp = np.memmap(file_path, dtype=dtype, mode='w+', shape=tuple(dimention))
     # generate random data
 
     total = np.prod(iter_space)
@@ -94,5 +94,5 @@ if __name__ == '__main__':
         k = lines[2]
         o = lines[3]
 
-        # generate_random_q_and_k(q, k)
-        sample_tensor(o)
+        generate_random_q_and_k(q, k)
+        # sample_tensor(o)

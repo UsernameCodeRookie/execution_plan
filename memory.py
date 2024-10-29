@@ -48,7 +48,7 @@ class DDR():
         path = os.path.join('resource', f'{tensor_id}.npy')
 
         mmap = np.memmap(path, dtype=dtype,
-                         mode='r+', shape=dimension)
+                         mode='w+', shape=tuple(dimension))
         self.tensor_map[tensor_id] = mmap
 
     def read(self, tensor_id, tile_pos, data):
