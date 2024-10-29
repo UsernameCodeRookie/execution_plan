@@ -1,7 +1,7 @@
 from objects import Slice
 from memory import TMA
-from program import Program
-from scheduler import Scheduler, Barrier, CPU
+from execution_plan import ExecutionPlan
+from scheduler import Scheduler, Barrier, ExecutionPlanManager
 import simpy
 import logging
 
@@ -13,16 +13,16 @@ class Simulator():
         self.tma = TMA(self.env)
         self.barrier = Barrier(self.env)
 
-        self.program = Program(file_path)
+        self.plan = ExecutionPlan(file_path)
 
         self.scheduler = Scheduler(self.slices, self.tma, self.barrier)
-        self.cpu = CPU(self.env, self.program, self.scheduler)
+        self.elm = ExecutionPlanManager(self.env, self.plan, self.scheduler)
 
     def run(self, simtime=None):
         self.env.run(until=simtime)
 
     def init(self):
-        self.env.process(self.cpu.loop())
+        self.env.process(self.elm.loop())
 
 
 if __name__ == '__main__':

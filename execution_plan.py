@@ -9,7 +9,7 @@ class Data():
         self.array = array
 
 
-class Program():
+class ExecutionPlan():
 
     def __init__(self, path):
         self.file = open('resource/' + path, 'r')

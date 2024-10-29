@@ -177,7 +177,7 @@ class Scheduler():
 CPU_CYCLE_TIME = 1
 
 
-class CPU:
+class ExecutionPlanManager:
     def __init__(self, env: simpy.Environment, program, scheduler: Scheduler):
         self.env = env
         self.program_iter = program
