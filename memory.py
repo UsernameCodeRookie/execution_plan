@@ -2,10 +2,27 @@ import simpy
 import numpy as np
 import logging
 import os
-
+import functools
 
 DDR_READ_TIME = 10
 DDR_WRITE_TIME = 10
+
+
+def log_decorator(log_message):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(self, *args, **kwargs):
+            logging.log(16, f'[{self.env.now}]Simulator: {
+                        log_message.format(*args)} start')
+            result = func(self, *args, **kwargs)
+            if isinstance(result, simpy.events.Event):
+                yield self.env.process(result)
+            else:
+                return result
+            logging.log(16, f'[{self.env.now}]Simulator: {
+                        log_message.format(*args)} end')
+        return wrapper
+    return decorator
 
 
 class TMA():
@@ -13,27 +30,20 @@ class TMA():
         self.env = env
         self.ddr = DDR(env)
 
+    @log_decorator('TMA make Tensor {0}, dimension {1}, tile_dimension {2}, dtype {3}')
     def make_tensor(self, *args):
-        logging.log(16, f'[{self.env.now}]Simulator: TMA make Tensor {
-                    args[0]}, dimension {args[1]}, tile_dimension {args[2]}, dtype {args[3]}')
         self.ddr.make_tensor(*args)
         yield self.env.timeout(0)
 
+    @log_decorator('TMA read DDR, Tensor {0}, Tile {1}')
     def read_ddr(self, *args):
-        logging.log(16, f'[{self.env.now}]Simulator: TMA read DDR, Tensor {
-                    args[0]}, Tile {args[1]} start')
         yield self.env.timeout(DDR_READ_TIME)
         self.ddr.read(*args)
-        logging.log(16, f'[{self.env.now}]Simulator: TMA read DDR, Tensor {
-                    args[0]}, Tile {args[1]} end')
 
+    @log_decorator('TMA write DDR, Tensor {0}, Tile {1}')
     def write_ddr(self, *args):
-        logging.log(16, f'[{self.env.now}]Simulator: TMA write DDR, Tensor {
-                    args[0]}, Tile {args[1]} start')
         yield self.env.timeout(DDR_WRITE_TIME)
         self.ddr.write(*args)
-        logging.log(16, f'[{self.env.now}]Simulator: TMA write DDR, Tensor {
-                    args[0]}, Tile {args[1]} end')
 
 
 class DDR():

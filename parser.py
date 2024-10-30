@@ -133,25 +133,21 @@ def p_error(p):
 
 def p_slice_predicate_slice_number(p):
     'slice_predicate : SLICE DOT NUMBER DOT'
-    logging.log(4, 'Parser: Slicing number with value: %s' % p[3])
     p[0] = [p[3]]
 
 
 def p_instruction_slice_claim_bar(p):
     'instruction : slice_predicate CLAIM_BAR LRB assignment RRB'
-    logging.log(4, 'Parser: Claiming barrier with assignment: %s' % p[4])
     p[0] = ('claim_barrier', p[1] + p[4])
 
 
 def p_instruction_slice_spm_alocate(p):
     'instruction : slice_predicate SPM_ALOCATE LRB assignment RRB'
-    logging.log(4, 'Parser: Alocating SPM with assignment: %s' % p[4])
     p[0] = ('spm_allocate', p[1] + p[4])
 
 
 def p_instruction_slice_spm_free(p):
     'instruction : slice_predicate SPM_FREE LRB assignment RRB'
-    logging.log(4, 'Parser: Freeing SPM with assignment: %s' % p[4])
     p[0] = ('spm_free', p[1] + p[4])
 
 
@@ -161,55 +157,46 @@ def p_tma_predicate(p):
 
 def p_slice_suffix_slice_number(p):
     'slice_suffix : DOT SLICE DOT NUMBER'
-    logging.log(4, 'Parser: Slice number with value: %s' % p[4])
     p[0] = [p[4]]
 
 
 def p_instruction_tma_load_slice(p):
     'instruction : tma_predicate LOAD slice_suffix LRB assignment RRB'
-    logging.log(4, 'Parser: Loading TMA with assignment: %s' % p[5])
     p[0] = ('tma_load_slice', p[3] + p[5])
 
 
 def p_instruction_tma_load_multicast(p):
     'instruction : tma_predicate LOAD DOT MULTICAST LRB assignment RRB'
-    logging.log(4, 'Parser: Loading TMA multicast with assignment: %s' % p[6])
     p[0] = ('tma_load_multicast', p[6])
 
 
 def p_instruction_tma_store_slice(p):
     'instruction : tma_predicate STORE slice_suffix LRB assignment RRB'
-    logging.log(4, 'Parser: Storing TMA with assignment: %s' % p[5])
     p[0] = ('tma_store_slice', p[3] + p[5])
 
 
 def p_instruction_tma_store_multicast(p):
     'instruction : tma_predicate STORE DOT MULTICAST LRB assignment RRB'
-    logging.log(4, 'Parser: Storing TMA multicast with assignment: %s' % p[6])
     p[0] = ('tma_store_multicast', p[6])
 
 
 def p_template_suffix(p):
     'template_suffix : DOUBLE_COLON LAB assignment RAB'
-    logging.log(4, 'Parser: Template suffix with assignment: %s' % p[3])
     p[0] = [p[3]]
 
 
 def p_make_tensor_template_suffix(p):
     'template_suffix : DOUBLE_COLON LAB NUMBER D RAB'
-    logging.log(4, 'Parser: Template suffix with number: %s' % p[3])
     p[0] = [p[3]]
 
 
 def p_instruction_make_tensor(p):
     'instruction : MAKE_TENSOR template_suffix LRB assignment RRB'
-    logging.log(4, 'Parser: Making tensor with assignment: %s' % p[4])
     p[0] = ('make_tensor', p[2] + p[4])
 
 
 def p_instruction_slice_gemm(p):
     'instruction : slice_predicate GEMM template_suffix LRB assignment RRB'
-    logging.log(4, 'Parser: GEMM with assignment: %s' % p[5])
     p[0] = ('slice_gemm', p[1] + p[3] + p[5])
 
 
